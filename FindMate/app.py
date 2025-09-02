@@ -1,28 +1,73 @@
-from flask import Flask, render_template, session, redirect, url_for, request
-from database import get_db
+from flask import Flask, render_template, session, redirect, url_for, request, flash
+from database import get_db, ensure_user_indexes
+from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="pages", static_folder="static")
 app.secret_key = "secret-key"  # 세션 관리용
+
+@app.before_first_request
+def bootstrap():
+    ensure_user_indexes()  # userId unique index 보장
 
 # 메인 페이지
 @app.route("/")
 def home():
-    return render_template("index.html")
+    user = session.get("user")  
+    return render_template("index.html", user=user)
 
 # 로그인 페이지
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username")
-        session["user"] = username or "게스트"
+        user_id = request.form.get("userId", "").strip()
+        password = request.form.get("password", "")
+
+        db = get_db()
+        user = db["users"].find_one({"userId": user_id})
+
+        if not user or not check_password_hash(user.get("password_hash", ""), password):
+            flash("아이디 또는 비밀번호가 올바르지 않습니다.", "error")
+            return redirect(url_for("login"))
+
+        # 로그인 성공 → 세션 저장
+        session["user"] = {"userId": user["userId"], "name": user.get("name", "")}
+        flash("로그인 성공!", "success")
         return redirect(url_for("home"))
+
     return render_template("login.html")
 
 # 회원가입 페이지
 @app.route("/sign", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        # 여기서 DB 저장 로직 추가 가능
+        name = request.form.get("name", "").strip()
+        user_id = request.form.get("userId", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirmPassword", "")
+
+        if not name or not user_id or not password:
+            flash("모든 필드를 입력하세요.", "error")
+            return redirect(url_for("signup"))
+
+        if password != confirm_password:
+            flash("비밀번호가 일치하지 않습니다.", "error")
+            return redirect(url_for("signup"))
+
+        db = get_db()
+
+        # userId 중복 검사
+        if db["users"].find_one({"userId": user_id}):
+            flash("이미 존재하는 아이디입니다.", "error")
+            return redirect(url_for("signup"))
+
+        # 유저 저장
+        db["users"].insert_one({
+            "name": name,
+            "userId": user_id,
+            "password_hash": generate_password_hash(password),
+        })
+
+        flash("회원가입 완료! 로그인해주세요.", "success")
         return redirect(url_for("login"))
     return render_template("sign.html")
 
@@ -30,6 +75,7 @@ def signup():
 @app.route("/logout")
 def logout():
     session.pop("user", None)
+    flash("로그아웃 되었습니다.", "success")
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
