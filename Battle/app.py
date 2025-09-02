@@ -1,5 +1,7 @@
 from flask import Flask, render_template, session, redirect, url_for, request
+from database import get_db
 
+db = get_db()
 app = Flask(__name__)
 app.secret_key = "secret-key"  # 세션 관리용
 
