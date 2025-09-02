@@ -8,7 +8,7 @@ app.secret_key = "secret-key"  # 세션 관리용
 # 메인 페이지
 @app.route("/")
 def home():
-    return render_template("main.html")
+    return render_template("index.html")
 
 # 로그인 페이지
 @app.route("/login", methods=["GET", "POST"])
