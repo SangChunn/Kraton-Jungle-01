@@ -25,3 +25,7 @@ dist-ssr
 
 # MongoDB ID, PW 저장
 .env
+
+# Python caches
+__pycache__/
+*.py[cod]
