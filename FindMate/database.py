@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
+from flask import g
+
 
 # 프로그램의 환경 변수에 .env 파일의 변수들을 추가
 load_dotenv()
@@ -15,7 +17,9 @@ client = MongoClient(MONGO_URI)
 
 def get_db():
     db = client.get_default_database()
-    print('workd!')
     return db
 
-# dnspython
+def ensure_user_indexes():
+    """users.userId unique 인덱스 보장 (앱 시작 시 1회 호출 권장)"""
+    db = get_db()
+    db["users"].create_index([("userId", ASCENDING)], unique=True)
