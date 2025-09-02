@@ -14,5 +14,10 @@
   </head>
   <body>
     <h1 class="text-3xl font-bold underline">Hello world!</h1>
+    <form method="POST" action="/login">
+      <input type="text"     name="userId"   placeholder="아이디" required />
+      <input type="password" name="password" placeholder="비밀번호" required />
+      <button type="submit">로그인</button>
+    </form>
   </body>
 </html>

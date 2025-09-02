@@ -14,5 +14,12 @@
   </head>
   <body>
     <h1 class="text-3xl font-bold underline">Hello world!</h1>
+    <form method="POST" action="/sign">
+      <input type="text"     name="name"     placeholder="이름" required />
+      <input type="text"     name="userId"   placeholder="아이디" required />
+      <input type="password" name="password" placeholder="비밀번호" required />
+      <button type="submit">회원가입</button>
+    </form>
+    
   </body>
 </html>
