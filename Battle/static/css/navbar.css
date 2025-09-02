@@ -1,1 +1,114 @@
-/*
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+#navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background: var(--color-bg-soft, #f6f7f9); /* 밝은 회색 배경 */
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Noto Sans, Apple SD Gothic Neo, "Pretendard", "Malgun Gothic", sans-serif;
+}
+
+/* 로고 (아이콘 + 텍스트) */
+#navbar .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: black;
+  margin-left: 100px;
+  font-size: 25px;
+  font-weight: 500;
+}
+#navbar .logo-icon {
+  width: 26px;
+  height: 26px;
+  stroke: var(--color-brand-700, #0b7a3b); /* 책 아이콘 초록 */
+  fill: none;
+  stroke-width: 2.4;
+}
+#navbar .logo-text {
+  color: #3f3f3f; /* 스샷처럼 진한 회색 */
+  font-weight: 800;
+  font-size: 1.25rem; /* 20px */
+  letter-spacing: -0.01em;
+}
+
+/* 오른쪽 메뉴 */
+#navbar .nav-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* '로그인' 링크 */
+#navbar .link {
+  color: var(--color-text-700, #6b7280); /* 중간 회색 */
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-radius: 8px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+#navbar .link:hover {
+  color: var(--color-brand-700, #0b7a3b);
+  background: transparent; /* 스샷 느낌: 배경 변화 없이 색만 */
+}
+
+/* '회원가입' 버튼 (진한 초록, 둥근 사각형) */
+#navbar .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.04s ease;
+  margin-right: 100px;
+}
+#navbar .btn-primary {
+  background: var(--color-brand-700, #0b7a3b);
+  color: #fff;
+}
+#navbar .btn-primary:hover {
+  background: color-mix(in oklab, var(--color-brand-700, #0b7a3b) 92%, white);
+}
+#navbar .btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* 반응형 살짝 조정 */
+@media (max-width: 640px) {
+  #navbar {
+    height: 56px;
+    padding: 0 16px;
+  }
+  #navbar .logo-text {
+    font-size: 1.125rem;
+  }
+  #navbar .btn {
+    height: 36px;
+    padding: 0 14px;
+  }
+  #navbar .nav-right {
+    gap: 12px;
+  }
+}
+#bookIcon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  /* #0b7a3b 근사치 */
+  filter: invert(21%) sepia(95%) saturate(1115%) hue-rotate(108deg)
+    brightness(94%) contrast(95%);
+}
