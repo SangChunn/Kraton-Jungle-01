@@ -23,7 +23,7 @@
   - [github 명령어](https://myeongsu0257.tistory.com/189)
 
 ## How to use Foledring
- - assets -> 폰트나 이미지
+ - assets -> 이미지
  - pages -> index.html 제외 나머지 html
  - scripts -> JS
  - styles -> CSS
@@ -45,3 +45,4 @@
 </html>
 ```
 - [tailwind](https://tailwindcss.com/)
+
