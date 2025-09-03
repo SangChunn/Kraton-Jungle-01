@@ -1,13 +1,16 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify
-from database import get_db, ensure_user_indexes
+from database import get_db, ensure_user_indexes, ensure_category_indexes
 from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import ASCENDING
+
 
 app = Flask(__name__, template_folder="pages", static_folder="static")
 app.secret_key = "secret-key"  # 세션 관리용
 
 @app.before_first_request
 def bootstrap():
-    ensure_user_indexes()  # userId unique index 보장
+    ensure_user_indexes()
+    ensure_category_indexes()   
     
     
 @app.route("/mypage")
@@ -26,8 +29,29 @@ def create():
 # 메인 페이지
 @app.route("/")
 def home():
-    user = session.get("user")  
-    return render_template("index.html", user=user)
+    user = session.get("user")
+    db = get_db()
+    cats = list(
+        db["categories"]
+        .find({"active": True}, {"_id": 0, "key": 1, "name": 1})
+        .sort("order", ASCENDING)
+    )
+
+    # studies는 아직 미구현이니 빈 배열로
+    return render_template(
+        "index.html",
+        user=user,
+        categories=cats,   # ← [{key, name}, ...]
+        studies=[],
+        sort_order="latest",
+    )
+
+@app.route("/api/categories", methods=["GET"])
+def api_categories():
+    db = get_db()
+    cats = list(db["categories"].find({"active": True}, {"_id": 0, "key": 1, "name": 1}).sort("order", 1))
+    return jsonify({"isSuccess": True, "code": "COMMON200", "result": cats}), 200
+
 
 # 로그인 페이지
 @app.route("/login", methods=["GET"], endpoint="login")
@@ -40,8 +64,6 @@ def api_login():
     data = request.get_json(silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
-
-    app.logger.info(f"[LOGIN] email(normalized)={email}") ## check
 
     if not email or not password:
         return jsonify({
@@ -56,22 +78,6 @@ def api_login():
     {"$set": {"password_hash": generate_password_hash("Test1234!")}}
 )
     user = db["users"].find_one({"userId": email})
-    app.logger.info(f"[LOGIN] user_found={bool(user)}") # check
-
-
-#check
-    ok = check_password_hash(user.get("password_hash", ""), password)
-    app.logger.info(f"[LOGIN] password_ok={ok}")
-
-    if not user or not check_password_hash(user.get("password_hash", ""), password):
-        print(email)
-        return jsonify({
-            "isSuccess": False,
-            "code": "AUTH401",
-            "message": "아이디 또는 비밀번호가 올바르지 않습니다."
-        }), 401
-###check 
-
 
     # 로그인 성공 -> 세션에 저장(쿠키는 Flask가 설정)
     session["user"] = {"userId": user["userId"], "name": user.get("name", "")}

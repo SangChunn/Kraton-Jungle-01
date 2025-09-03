@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from pymongo import MongoClient, ASCENDING
 from flask import g
 
-
 # 프로그램의 환경 변수에 .env 파일의 변수들을 추가
 load_dotenv()
 
@@ -23,3 +22,8 @@ def ensure_user_indexes():
     """users.userId unique 인덱스 보장 (앱 시작 시 1회 호출 권장)"""
     db = get_db()
     db["users"].create_index([("userId", ASCENDING)], unique=True)
+    
+def ensure_category_indexes():
+    db = get_db()
+    db["categories"].create_index([("key", ASCENDING)], unique=True)
+    db["categories"].create_index([("active", ASCENDING), ("order", ASCENDING)])

@@ -1,160 +1,36 @@
-/*const CS_CATEGORIES = [
-  "자료구조/알고리즘",
-  "운영체제",
-  "네트워크",
-  "데이터베이스",
-  "컴퓨터구조",
-  "보안",
-  "웹/프론트엔드",
-  "백엔드",
-  "클라우드/DevOps",
-  "코딩테스트",
-];
+// SSR payload 읽기 (없으면 안전 기본값) ----------------------------
+function readPayload() {
+  const el = document.getElementById("payload");
+  try {
+    if (window.__PAYLOAD) return window.__PAYLOAD;
+    return el ? JSON.parse(el.textContent) : {};
+  } catch {
+    return {};
+  }
+}
 
-// 데모 데이터 (초기 화면에 보이도록 모두 badge: '모집중')
-const studies = [
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
+const payload = readPayload();
+const rawCats = Array.isArray(payload.categories) ? payload.categories : [];
+const studies = Array.isArray(payload.studies) ? payload.studies : [];
+let sortOrder = payload.sortOrder === "oldest" ? "oldest" : "latest";
 
-  {
-    badge: "모집중",
-    category: "운영체제",
-    title: "OS Concepts 읽기",
-    desc: "챕터별 발표/질문",
-    dateISO: "2025-09-10T19:00",
-    durationMin: 120,
-    host: "min",
-    capacity: "4/8",
-  },
-  {
-    badge: "모집중",
-    category: "네트워크",
-    title: "네트워크 기초 스터디",
-    desc: "OSI 7계층, TCP/UDP",
-    dateISO: "2025-09-07T10:00",
-    durationMin: 60,
-    host: "jay",
-    capacity: "3/7",
-  },
-  {
-    badge: "모집중",
-    category: "웹/프론트엔드",
-    title: "리액트 훅/상태관리",
-    desc: "라우팅까지 훑기",
-    dateISO: "2025-09-12T20:00",
-    durationMin: 90,
-    host: "ara",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "코딩테스트",
-    title: "주 5일 코테 루틴",
-    desc: "프로그래머스 중심",
-    dateISO: "2025-09-06T09:00",
-    durationMin: 30,
-    host: "kim",
-    capacity: "5/10",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-  {
-    badge: "모집중",
-    category: "자료구조/알고리즘",
-    title: "알고리즘 스터디 A",
-    desc: "1일 1문제, 주 3회 온라인",
-    dateISO: "2025-09-05T14:00",
-    durationMin: 60,
-    host: "sally",
-    capacity: "2/6",
-  },
-]; */
-const payload =
-  window.__PAYLOAD ||
-  (document.getElementById("payload")
-    ? JSON.parse(document.getElementById("payload").textContent)
-    : {});
-const { categories: CS_CATEGORIES = [], studies = [] } = payload;
+// 카테고리 정규화 & 맵 
+function slugify(name) {
+  return String(name)
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[\/_]/g, "-")
+    .toLowerCase();
+}
+const categories = rawCats.map((c, i) =>
+  typeof c === "string" ? { key: slugify(c), name: c, order: i + 1 } : c
+);
+const catKeyToName = new Map(categories.map((c) => [c.key, c.name]));
 
+// 상태 & 엘리먼트 
 const PAGE_SIZE = 6;
 let currentPage = 1;
-const selectedCategories = new Set();
+const selectedCategories = new Set(); // key 집합
 const filterState = { dateFrom: "", timeFrom: "", duration: "" };
 
 const cardsEl = document.getElementById("cards");
@@ -167,96 +43,46 @@ const resetBtnEl = document.getElementById("resetBtn");
 const sortLatestBtn = document.getElementById("sort-latest");
 const sortOldestBtn = document.getElementById("sort-oldest");
 
-if (sortLatestBtn) {
-  sortLatestBtn.addEventListener("click", () => {
-    sortOrder = "latest";
-    goToPage(1);
-    render();
+// 카테고리 렌더링 (name 표시, key 값) 
+function renderCategories() {
+  if (!categoryListEl) return;
+  categoryListEl.innerHTML = "";
+  categories.forEach((c, i) => {
+    const id = `cat-${i}`;
+    const row = document.createElement("label");
+    row.className = "flex items-center gap-2 cursor-pointer";
+    row.innerHTML = `
+      <input id="${id}" type="checkbox" value="${c.key}"
+             class="h-4 w-4 rounded border-gray-300 text-[var(--brand)] focus:ring-[var(--brand)]" />
+      <span>${c.name}</span>
+    `;
+    row.querySelector("input").addEventListener("change", (e) => {
+      if (e.target.checked) selectedCategories.add(c.key);
+      else selectedCategories.delete(c.key);
+      goToPage(1);
+      render();
+    });
+    categoryListEl.appendChild(row);
   });
 }
-if (sortOldestBtn) {
-  sortOldestBtn.addEventListener("click", () => {
-    sortOrder = "oldest";
-    goToPage(1);
-    render();
-  });
+
+// 필터 유틸 
+function resolveItemCatKey(cat) {
+  // studies에 category가 "key"로 올 수도, "name"으로 올 수도 있으니 둘 다 대응
+  if (catKeyToName.has(cat)) return cat; // 이미 key
+  const found = categories.find((c) => c.name === cat);
+  return found ? found.key : cat; // 못 찾으면 원본 반환(필터 미적용)
 }
-
-CS_CATEGORIES.forEach((name, i) => {
-  const id = `cat-${i}`;
-  const row = document.createElement("label");
-  row.className = "flex items-center gap-2 cursor-pointer";
-  row.innerHTML = `
-    <input id="${id}" type="checkbox" value="${name}"
-           class="h-4 w-4 rounded border-gray-300 text-[var(--brand)] focus:ring-[var(--brand)]" />
-    <span>${name}</span>
-  `;
-  row.querySelector("input").addEventListener("change", (e) => {
-    if (e.target.checked) selectedCategories.add(e.target.value);
-    else selectedCategories.delete(e.target.value);
-    goToPage(1);
-    render();
-  });
-  categoryListEl.appendChild(row);
-});
-let sortOrder = "latest"; // 기본은 최신순
-document.getElementById("sort-latest").addEventListener("click", () => {
-  sortOrder = "latest";
-  goToPage(1);
-  render();
-});
-
-document.getElementById("sort-oldest").addEventListener("click", () => {
-  sortOrder = "oldest";
-  goToPage(1);
-  render();
-});
-
-dateFromEl.addEventListener("input", () => {
-  filterState.dateFrom = dateFromEl.value; // YYYY-MM-DD 또는 ""
-  goToPage(1);
-  render();
-});
-
-timeFromEl.addEventListener("input", () => {
-  filterState.timeFrom = timeFromEl.value;
-  goToPage(1);
-  render();
-});
-
-durationEl.addEventListener("change", () => {
-  filterState.duration = durationEl.value; // "30" | "60" | ... | ""
-  goToPage(1);
-  render();
-});
-
-resetBtnEl.addEventListener("click", () => {
-  selectedCategories.clear();
-  Array.from(categoryListEl.querySelectorAll("input[type=checkbox]")).forEach(
-    (chk) => (chk.checked = false)
-  );
-  dateFromEl.value = "";
-  timeFromEl.value = "";
-  durationEl.value = "";
-  filterState.dateFrom = "";
-  filterState.timeFrom = "";
-  filterState.duration = "";
-  goToPage(1);
-  render();
-});
 
 function withinDateRange(iso) {
-  if (!iso) return true;
-  if (!filterState.dateFrom) return true; // 시작일 선택 안 했으면 무조건 통과
-
+  if (!iso || !filterState.dateFrom) return true;
   const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return true; // 이상한 날짜면 통과
   const from = new Date(filterState.dateFrom);
-
   if (filterState.timeFrom) {
     const [hh, mm] = filterState.timeFrom.split(":");
-    from.setHours(hh, mm, 0, 0);
+    from.setHours(+hh || 0, +mm || 0, 0, 0);
   }
-
   return d >= from;
 }
 
@@ -267,46 +93,32 @@ function matchesDuration(min) {
 
 function matchesCategory(cat) {
   if (selectedCategories.size === 0) return true;
-  return selectedCategories.has(cat);
+  const key = resolveItemCatKey(cat);
+  return selectedCategories.has(key);
 }
 
+// 6) 목록/정렬/페이지 
 function getVisibleStudies() {
-  // 모집중만 보기
   let list = studies.filter(
     (s) =>
-      s.badge === "모집중" &&
+      (s.badge ? s.badge === "모집중" : true) && // badge 없으면 통과
       matchesCategory(s.category) &&
       withinDateRange(s.dateISO) &&
       matchesDuration(s.durationMin)
   );
   list.sort((a, b) => {
-    if (sortOrder === "latest") {
-      return new Date(b.dateISO) - new Date(a.dateISO); // 큰 날짜(최신)가 앞으로
-    } else {
-      return new Date(a.dateISO) - new Date(b.dateISO); // 작은 날짜(오래된)가 앞으로
-    }
+    const da = new Date(a.dateISO);
+    const db = new Date(b.dateISO);
+    const aTime = Number.isNaN(da.getTime()) ? 0 : da.getTime();
+    const bTime = Number.isNaN(db.getTime()) ? 0 : db.getTime();
+    return sortOrder === "latest" ? bTime - aTime : aTime - bTime;
   });
-
   return list;
 }
 
-function render() {
-  const visible = getVisibleStudies();
-
-  // 카드
-  cardsEl.innerHTML = "";
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const pageItems = visible.slice(start, start + PAGE_SIZE);
-  pageItems.forEach((item) => cardsEl.appendChild(cardEl(item)));
-
-  // 플레이스홀더로 행 채우기(레이아웃 유지)
-  const placeholders = PAGE_SIZE - pageItems.length;
-  for (let i = 0; i < placeholders; i++) {
-    cardsEl.appendChild(placeholderEl());
-  }
-
-  // 페이지네이션
-  renderPagination(visible.length);
+function goToPage(n) {
+  const total = Math.max(1, Math.ceil(getVisibleStudies().length / PAGE_SIZE));
+  currentPage = Math.min(Math.max(1, n), total);
 }
 
 function renderPagination(totalCount) {
@@ -331,17 +143,8 @@ function renderPagination(totalCount) {
     paginationEl.appendChild(b);
   }
   paginationEl.appendChild(
-    pagerBtn(
-      "다음",
-      () => goToPage(currentPage + 1),
-      currentPage === totalPages
-    )
+    pagerBtn("다음", () => goToPage(currentPage + 1), currentPage === totalPages)
   );
-}
-
-function goToPage(n) {
-  const total = Math.max(1, Math.ceil(getVisibleStudies().length / PAGE_SIZE));
-  currentPage = Math.min(Math.max(1, n), total);
 }
 
 function pagerBtn(label, onClick, disabled = false) {
@@ -355,34 +158,44 @@ function pagerBtn(label, onClick, disabled = false) {
   b.disabled = disabled;
   b.onclick = () => {
     if (disabled) return;
-    onClick(); // goToPage(...)
-    render(); // ✅ 페이지 갱신
+    onClick();
+    render();
   };
   return b;
 }
+
+// 7) 카드 렌더
 function cardEl(item) {
   const el = document.createElement("article");
   el.className =
     "h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col";
+
+  const displayCat =
+    catKeyToName.get(resolveItemCatKey(item.category)) ?? String(item.category ?? "");
+
   el.innerHTML = `
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">${item.badge}</span>
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">${item.category}</span>
+        ${
+          item.badge
+            ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">${item.badge}</span>`
+            : ""
+        }
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">${displayCat}</span>
       </div>
-      <span class="text-sm text-gray-500">👥 ${item.capacity}</span>
+      <span class="text-sm text-gray-500">👥 ${item.capacity ?? "-"}</span>
     </div>
 
-    <h3 class="mt-4 text-lg font-extrabold text-gray-800 wrap-anywhere">${item.title}</h3>
+    <h3 class="mt-4 text-lg font-extrabold text-gray-800 wrap-anywhere">${item.title ?? ""}</h3>
 
     <p class="pt-6 text-sm leading-7 text-gray-600 wrap-anywhere">
-      ${item.desc}
+      ${item.desc ?? ""}
     </p>
 
     <div class="mt-auto pt-6 flex items-center gap-3 text-sm text-gray-600">
-      <span>👤 ${item.host}</span>
-      <span>📅 ${item.dateISO}</span>
-      <span>⏱ ${item.durationMin}분</span>
+      <span>👤 ${item.host ?? ""}</span>
+      <span>📅 ${item.dateISO ?? ""}</span>
+      <span>⏱ ${item.durationMin ?? ""}분</span>
     </div>
   `;
   return el;
@@ -396,4 +209,76 @@ function placeholderEl() {
   return el;
 }
 
-render();
+// 메인 렌더 
+function render() {
+  const visible = getVisibleStudies();
+  // 카드
+  cardsEl.innerHTML = "";
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = visible.slice(start, start + PAGE_SIZE);
+  pageItems.forEach((item) => cardsEl.appendChild(cardEl(item)));
+  // 플레이스홀더
+  for (let i = pageItems.length; i < PAGE_SIZE; i++) {
+    cardsEl.appendChild(placeholderEl());
+  }
+  // 페이지네이션
+  renderPagination(visible.length);
+}
+
+// 이벤트 바인딩 
+function bindEvents() {
+  if (sortLatestBtn)
+    sortLatestBtn.addEventListener("click", () => {
+      sortOrder = "latest";
+      goToPage(1);
+      render();
+    });
+  if (sortOldestBtn)
+    sortOldestBtn.addEventListener("click", () => {
+      sortOrder = "oldest";
+      goToPage(1);
+      render();
+    });
+
+  if (dateFromEl)
+    dateFromEl.addEventListener("input", () => {
+      filterState.dateFrom = dateFromEl.value; // YYYY-MM-DD | ""
+      goToPage(1);
+      render();
+    });
+  if (timeFromEl)
+    timeFromEl.addEventListener("input", () => {
+      filterState.timeFrom = timeFromEl.value;
+      goToPage(1);
+      render();
+    });
+  if (durationEl)
+    durationEl.addEventListener("change", () => {
+      filterState.duration = durationEl.value; // "30" | "60" | ... | ""
+      goToPage(1);
+      render();
+    });
+  if (resetBtnEl)
+    resetBtnEl.addEventListener("click", () => {
+      selectedCategories.clear();
+      document
+        .querySelectorAll("#categoryList input[type=checkbox]")
+        .forEach((chk) => (chk.checked = false));
+      dateFromEl && (dateFromEl.value = "");
+      timeFromEl && (timeFromEl.value = "");
+      durationEl && (durationEl.value = "");
+      filterState.dateFrom = "";
+      filterState.timeFrom = "";
+      filterState.duration = "";
+      goToPage(1);
+      render();
+    });
+}
+
+// 초기화 
+function init() {
+  renderCategories();
+  bindEvents();
+  render();
+}
+document.addEventListener("DOMContentLoaded", init);

@@ -173,11 +173,7 @@
 
     <!-- JS 연결 -->
     <script id="payload" type="application/json">
-      {{ {
-        "categories": categories|default([]),
-        "studies": studies|default([]),
-        "sortOrder": sort_order|default("latest")
-      } | tojson }}
+      {{ {"categories": categories, "studies": studies, "sortOrder": sort_order} | tojson }}
     </script>
     <script
       type="text/javascript"
