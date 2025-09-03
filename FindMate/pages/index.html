@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,12 +10,32 @@
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
-    <link rel="stylesheet" href="/FindMate/static/css/style.css" />
-
-    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <title>FindMate</title>
+    <style>
+      .wrap-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+      .clamp-2 {
+        display: block;
+        max-height: 3.2em;
+        overflow: hidden;
+      }
+      :root {
+        --brand: #2563eb;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-gray-50">
+    <!-- NAV -->
     <div id="navbar">
       <a class="logo" href="/"
         ><img
@@ -25,39 +45,139 @@
         />FindMate</a
       >
       <nav class="nav-right">
+        {% if user %}
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        {% else %}
         <a href="{{ url_for('login') }}" class="link">로그인</a>
         <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
-        <!-- 로그인 상태라면 -->
-        <!-- <a href="/mypage" class="link">마이페이지</a>
-       <button class="btn btn-primary">로그아웃</button> -->
+        {% endif %}
       </nav>
     </div>
-    <div class="flex flex-col bg-gray-50 min-h-[calc(100vh-64px)]">
-      <section class="max-w-6xl mx-auto px-6 pt-20 pb-8 text-center">
-        <h1
-          class="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-800"
-        >
-          함께 성장하는 스터디 플랫폼
-        </h1>
-        <p class="mt-4 text-gray-500">
-          같은 목표를 가진 사람들과 함께 학습하고 성장해보세요
-        </p>
-      </section>
 
-      <!-- 카드 그리드 -->
-      <main class="max-w-6xl mx-auto pt-20">
-        <div
-          id="cards"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-[240px] sm:auto-rows-[280px] lg:auto-rows-[320px]"
-        ></div>
-
-        <!-- 페이지네이션 -->
-        <div
-          id="pagination"
-          class="mt-8 flex items-center justify-center gap-5 pt-10"
-        ></div>
-      </main>
+    <!-- HERO -->
+    <section class="max-w-6xl mx-auto px-6 pt-20 pb-8 text-center">
+      <h1
+        class="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-800"
+      >
+        함께 성장하는 스터디 플랫폼
+      </h1>
+      <p class="mt-4 text-gray-500">
+        같은 목표를 가진 사람들과 함께 학습하고 성장해보세요
+      </p>
+    </section>
+    <div
+      class="mt-4 flex items-center justify-center gap-4 text-sm text-gray-600"
+    >
+      <button
+        id="sort-latest"
+        class="px-3 py-1 rounded-lg border bg-white hover:bg-gray-100"
+      >
+        최신순
+      </button>
+      <button
+        id="sort-oldest"
+        class="px-3 py-1 rounded-lg border bg-white hover:bg-gray-100"
+      >
+        오래된순
+      </button>
     </div>
-    <script type="text/javascript" src="/FindMate/static/js/index.js"></script>
+    <!-- MAIN -->
+    <main class="max-w-[1800px] mx-auto px-6 pb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- 사이드 필터 -->
+        <aside class="lg:col-span-3">
+          <div
+            class="bg-white rounded-2xl border border-gray-200 p-6 sticky top-6"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold">필터</h2>
+              <button
+                id="resetBtn"
+                class="text-sm text-gray-500 hover:text-gray-700"
+              >
+                초기화
+              </button>
+            </div>
+
+            <!-- 카테고리 -->
+            <div>
+              <h3 class="text-sm font-semibold text-gray-700 mb-2">카테고리</h3>
+              <div id="categoryList" class="space-y-2 text-sm"></div>
+            </div>
+
+            <hr class="my-6" />
+
+            <!-- 날짜 -->
+            <div class="space-y-3">
+              <h3 class="text-sm font-semibold text-gray-700">시작일시 이후</h3>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">날짜</label>
+                  <input
+                    id="dateFrom"
+                    type="date"
+                    class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">시간</label>
+                  <input
+                    id="timeFrom"
+                    type="time"
+                    class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-6" />
+
+            <!-- 소요시간 -->
+            <div class="space-y-2">
+              <h3 class="text-sm font-semibold text-gray-700">소요시간</h3>
+              <select
+                id="duration"
+                class="w-full h-10 px-3 rounded-lg border border-gray-300 text-sm"
+              >
+                <option value="">전체</option>
+                <option value="30">30분</option>
+                <option value="60">60분</option>
+                <option value="90">90분</option>
+                <option value="120">120분</option>
+              </select>
+            </div>
+          </div>
+        </aside>
+
+        <!-- 카드/페이지네이션 -->
+        <section class="lg:col-span-9">
+          <div class="flex justify-end mb-4">
+            <a
+              href="{{ url_for('create') }}"
+              class="px-4 py-2 rounded-lg bg-[var(--brand)] text-white font-semibold hover:bg-blue-700 transition"
+              >등록하기</a
+            >
+          </div>
+          <div
+            id="cards"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-[320px] sm:auto-rows-[380px] lg:auto-rows-[420px]"
+          ></div>
+          <div
+            id="pagination"
+            class="mt-8 flex items-center justify-center gap-5 pt-10"
+          ></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- JS 연결 -->
+    <script id="payload" type="application/json">
+      {{ {"categories": categories, "studies": studies, "sortOrder": sort_order} | tojson }}
+    </script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='js/index.js') }}"
+    ></script>
   </body>
 </html>
