@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Jinja2에서 주입한 경로들
   const JOIN_URL = form.dataset.joinUrl; // {{ url_for('api_join') }}
   const EMAIL_CHECK_TEMPLATE = form.dataset.emailCheckUrlTemplate; // {{ url_for('api_email_check', email='__EMAIL__') }}
-  const LOGIN_URL = form.dataset.loginUrl; // {{ url_for('login_page') }}
+  const LOGIN_URL = form.dataset.loginUrl; // {{ url_for('login') }}
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
