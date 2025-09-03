@@ -39,7 +39,7 @@
     <div id="navbar">
       <a class="logo" href="/"
         ><img
-          src="/FindMate/views/book-open-svgrepo-com.png"
+          src="{{ url_for('static', filename='IMG/book.png') }}"
           alt="icon"
           id="bookIcon"
         />FindMate</a
@@ -73,13 +73,13 @@
         id="sort-latest"
         class="px-3 py-1 rounded-lg border bg-white hover:bg-gray-100"
       >
-        최신순
+        먼 날짜
       </button>
       <button
         id="sort-oldest"
         class="px-3 py-1 rounded-lg border bg-white hover:bg-gray-100"
       >
-        오래된순
+        가까운 날짜
       </button>
     </div>
     <!-- MAIN -->

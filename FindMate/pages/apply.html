@@ -17,16 +17,14 @@
 </head>
 <body class="font-[Pretendard] bg-gray-50">
   <!-- NAV -->
-  <div id="navbar" class="flex items-center justify-between px-4 py-3 shadow">
-    <a class="logo flex items-center gap-2" href="{{ url_for('home') }}">
-      <img
-        src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+  <div id="navbar">
+    <a class="logo" href="{{ url_for('home') }}"
+      ><img
+        src="{{ url_for('static', filename='IMG/book.png') }}"
         alt="icon"
         id="bookIcon"
-        class="w-6 h-6"
-      />
-      <span class="font-semibold">FindMate</span>
-    </a>
+      />FindMate</a
+    >
     <nav class="nav-right">
       {% if user %}
         <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>

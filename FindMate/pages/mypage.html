@@ -31,6 +31,13 @@
         />
         FindMate
       </a>
+      <a class="logo" href="/"
+        ><img
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+          alt="icon"
+          id="bookIcon"
+          class="w-6 h-6"
+        />
       <nav class="nav-right">
         {% if user %}
           <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
