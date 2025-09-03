@@ -43,17 +43,24 @@
         />
         <span class="font-semibold">FindMate</span>
       </a>
-      <nav class="nav-right flex items-center gap-3">
-        {% if current_user %}
+      <nav class="nav-right">
+        {% if user %}
         <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
         <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
         {% else %}
         <a href="{{ url_for('login') }}" class="link">로그인</a>
-        <a href="{{ url_for('signup) }}" class="btn btn-primary">회원가입</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
         {% endif %}
       </nav>
     </div>
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  
     <!-- Content -->
     <div class="element max-w-xl mx-auto px-4 py-10">
       <div class="frame-wrapper">
