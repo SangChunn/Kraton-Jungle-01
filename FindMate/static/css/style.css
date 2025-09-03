@@ -57,19 +57,19 @@
     Apple SD Gothic Neo, "Pretendard", "Malgun Gothic", sans-serif;
 }
 /* 3줄까지만 보여주기 (표준) */
-.clamp-3 {
-  overflow: hidden;
-  line-clamp: 3; /* 지원 브라우저에서 동작 */
-}
-
-/* 2줄 */
-.clamp-2 {
-  overflow: hidden;
-  line-clamp: 2;
-}
-
-/* 긴 단어 줄바꿈 */
 .wrap-anywhere {
-  overflow-wrap: anywhere;
-  word-break: normal;
-}
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+.clamp-1{
+         display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;  /* 핵심 */
+        overflow: hidden;
+      }
+       .clamp-2 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;  /* 핵심 */
+        overflow: hidden;
+      }

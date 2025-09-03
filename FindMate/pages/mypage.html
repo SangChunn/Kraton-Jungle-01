@@ -15,42 +15,57 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <title>마이페이지 | FindMate</title>
     <style>
-      .row-scroll { scroll-behavior: smooth; overflow-x: auto; scroll-snap-type: x mandatory; }
+      .wrap-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+      .clamp-1{
+         display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;  /* 핵심 */
+        overflow: hidden;
+      }
+      .clamp-2 {
+        display: -webkit-box;
+        -webkit-box-orient: horizontal;
+        -webkit-line-clamp: 2;  /* 핵심 */
+        overflow: hidden;
+      }
+    </style>
+    <style>
+      .row-scroll { scroll-behavior: smooth; overflow-x: auto; scroll-snap-type: x mandatory;}
       .card { scroll-snap-align: start; min-width: 320px; }
-      .wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
     </style>
   </head>
   <body class="font-[Pretendard] bg-gray-50">
     <!-- NAV -->
     <div id="navbar">
-      <a class="logo" href="{{ url_for('home') }}">
-        <img
-          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
-          alt="icon"
-          id="bookIcon"
-        />
-        FindMate
-      </a>
       <a class="logo" href="/"
         ><img
-          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+          src="{{ url_for('static', filename='IMG/book.png') }}"
           alt="icon"
           id="bookIcon"
-          class="w-6 h-6"
-        />
+        />FindMate</a
+      >
       <nav class="nav-right">
         {% if user %}
-          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
-          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃 
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+          </svg>
+        </a>
         {% else %}
-          <a href="{{ url_for('login') }}" class="link">로그인</a>
-          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        <a href="{{ url_for('signup') }}" class="link">회원가입</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary" >로그인<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+</svg>
+</a>
         {% endif %}
       </nav>
     </div>
-
     <!-- Flash -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
+   
       {% if messages %}
         <div class="max-w-5xl mx-auto px-6 mt-4">
           {% for category, message in messages %}
@@ -58,7 +73,7 @@
           {% endfor %}
         </div>
       {% endif %}
-    {% endwith %}
+
 
     <div class="flex flex-col min-h-[calc(100vh-64px)]">
       <main class="max-w-5xl mx-auto px-4 py-8 w-full">
@@ -66,15 +81,11 @@
         <section class="mt-12 mb-24">
           <div class="flex items-center justify-between">
             <h2 class="mt-4 text-2xl font-extrabold text-gray-800">내가 만든 스터디 모임</h2>
-            <div class="flex items-center gap-2">
-              <button class="px-3 py-1 border rounded" onclick="scrollRow('hosted', -1)">◀</button>
-              <button class="px-3 py-1 border rounded" onclick="scrollRow('hosted', 1)">▶</button>
-            </div>
           </div>
 
-          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
+          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6 pb-2">
             {% if hosted_studies %}
-              <div id="row-hosted" class="row-scroll flex gap-6 p-2">
+              <div id="row-hosted" class="row-scroll flex gap-6 p-2 clamp-2" >
                 {% for s in hosted_studies %}
                   {% set sid = (s.id or s._id)|string %}
                   {% set is_active = (s.active if s.active is not none else true) %}
@@ -105,8 +116,8 @@
                           </span>
                         </div>
           
-                        <div class="text-center">
-                          <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere">
+                        <div class="text-center pb-16">
+                          <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere clamp-1">
                             {{ s.title }}
                           </h3>
                           <p class="text-gray-600 text-sm">{{ when or '' }}</p>
@@ -129,13 +140,9 @@
         <section class="mb-24">
           <div class="flex items-center justify-between">
             <h2 class="mt-4 text-2xl font-extrabold text-gray-800">내가 참여한 스터디 모임</h2>
-            <div class="flex items-center gap-2">
-              <button class="px-3 py-1 border rounded" onclick="scrollRow('applied', -1)">◀</button>
-              <button class="px-3 py-1 border rounded" onclick="scrollRow('applied', 1)">▶</button>
-            </div>
           </div>
 
-          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
+          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6 pb-2">
             {% if attended_studies %}
               <div id="row-applied" class="row-scroll flex gap-6 p-2">
                 {% for s in attended_studies %}
@@ -168,8 +175,8 @@
                         </span>
                       </div>
 
-                      <div class="text-center">
-                        <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere">
+                      <div class="text-center pb-16">
+                        <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere clamp-1">
                           {{ s.title }}
                         </h3>
                         <p class="text-gray-600 text-sm">{{ when or '' }}</p>
@@ -187,14 +194,5 @@
         </section>
       </main>
     </div>
-
-    <script>
-      function scrollRow(which, dir) {
-        const el = document.getElementById(which === 'hosted' ? 'row-hosted' : 'row-applied');
-        if (!el) return;
-        const step = 360; // 카드 너비+간격
-        el.scrollLeft += dir * step;
-      }
-    </script>
   </body>
 </html>

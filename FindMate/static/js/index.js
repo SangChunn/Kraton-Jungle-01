@@ -168,7 +168,7 @@ function pagerBtn(label, onClick, disabled = false) {
 function cardEl(item) {
   const el = document.createElement("article");
   el.className =
-    "h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col " +
+    "h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col " +
     "cursor-pointer transition hover:shadow-md hover:-translate-y-0.5";
   el.setAttribute("role", "button");
   el.tabIndex = 0;
@@ -186,18 +186,24 @@ function cardEl(item) {
         }
         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">${displayCat}</span>
       </div>
-      <span class="text-sm text-gray-500">👥 ${item.capacity ?? "-"}</span>
+      <span class="text-sm text-gray-500">👥 ${item.applicants}/${item.capacity ?? "-"}</span>
     </div>
 
-    <h3 class="mt-4 text-lg font-extrabold text-gray-800 wrap-anywhere">${item.title ?? ""}</h3>
+    <h3 class="mt-4 text-base sm:text-lg font-bold leading-tight clamp-1">${item.title ?? ""}</h3>
 
-    <p class="pt-6 text-sm leading-7 text-gray-600 wrap-anywhere">
+    <p class="mt-4 text-sm text-gray-600 clamp-2">
       ${item.desc ?? ""}
     </p>
 
     <div class="mt-auto pt-6 flex items-center gap-3 text-sm text-gray-600">
       <span>👤 ${item.host ?? ""}</span>
-      <span>📅 ${item.dateISO ?? ""}</span>
+      <span>📅 ${(
+    item.dateISO ?? ""
+  )
+    .toString()
+    .replace("T", " ")     // T → 공백
+    .replace(/:\d{2}(?=(\s|$|Z))/, "") // 끝쪽 초(:SS) 제거
+    .replace(/Z$/, "")} </span>
       <span>⏱ ${item.durationMin ?? ""}분</span>
     </div>
   `;

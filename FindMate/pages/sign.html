@@ -34,7 +34,7 @@
   <body class="font-[Pretendard]">
     <!-- Navbar -->
     <div id="navbar">
-      <a class="logo" href="{{ url_for('home') }}"
+      <a class="logo" href="/"
         ><img
           src="{{ url_for('static', filename='IMG/book.png') }}"
           alt="icon"
@@ -43,24 +43,31 @@
       >
       <nav class="nav-right">
         {% if user %}
-          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
-          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃 
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+          </svg>
+        </a>
         {% else %}
-          <a href="{{ url_for('login') }}" class="link">로그인</a>
-          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        <a href="{{ url_for('signup') }}" class="link">회원가입</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary" >로그인<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+</svg>
+</a>
         {% endif %}
       </nav>
     </div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
+
       {% if messages %}
         {% for category, message in messages %}
           <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
       {% endif %}
-    {% endwith %}
+
   
     <!-- Content -->
-    <div class="element max-w-xl mx-auto px-4 py-10">
+    <div class="element">
       <div class="frame-wrapper">
         <div class="frame">
           <div class="div">
@@ -68,7 +75,7 @@
 
             <div class="frame-3">
               <div class="frame-4">
-                <div class="text-wrapper-5 text-2xl font-semibold mb-6">
+                <div class="text-wrapper-5">
                   아이디와 비밀번호를<br />입력해주세요
                 </div>
 
@@ -78,96 +85,96 @@
                   data-email-check-url-template="{{ url_for('api_email_check', email='__EMAIL__') }}"
                   data-login-url="{{ url_for('login') }}"
                 >
-                  <div class="frame-5 space-y-5">
+                  <div class="frame-5">
                     <!-- 이름 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6 mb-2">이름</div>
+                      <div class="text-wrapper-6">이름</div>
                       <div class="frame-7">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="text"
                               id="nickname"
-                              class="input-field border w-full p-2 rounded"
+                              class="input-field"
                               placeholder=""
                             />
                           </div>
                         </div>
                         <div
                           id="nicknameError"
-                          class="error text-red-500 text-sm mt-1"
+                          class="error text-red-500"
                         ></div>
                       </div>
                     </div>
 
                     <!-- 아이디 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6 mb-2">아이디</div>
+                      <div class="text-wrapper-6">아이디</div>
                       <div class="frame-7">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="text"
                               id="username"
-                              class="input-field border w-full p-2 rounded"
+                              class="input-field"
                               placeholder="ID 입력"
                             />
                           </div>
                         </div>
                         <div
                           id="usernameError"
-                          class="error text-red-500 text-sm mt-1"
+                          class="error text-red-500"
                         ></div>
                       </div>
                     </div>
 
                     <!-- 비밀번호 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6 mb-2">비밀번호</div>
+                      <div class="text-wrapper-6">비밀번호</div>
                       <div class="frame-9">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="password"
                               id="password"
-                              class="input-field border w-full p-2 rounded"
+                              class="input-field"
                               placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
                             />
                           </div>
                         </div>
                         <div
                           id="passwordError"
-                          class="error text-red-500 text-sm mt-1"
+                          class="error text-red-500"
                         ></div>
                       </div>
                     </div>
 
                     <!-- 비밀번호 확인 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6 mb-2">비밀번호 확인</div>
+                      <div class="text-wrapper-6">비밀번호 확인</div>
                       <div class="frame-9">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="password"
                               id="confirmPassword"
-                              class="input-field border w-full p-2 rounded"
+                              class="input-field"
                               placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
                             />
                           </div>
                         </div>
                         <p
                           id="confirmPasswordError"
-                          class="error text-red-500 text-sm mt-1"
+                          class="error text-red-500"
                         ></p>
                       </div>
                     </div>
                   </div>
 
-                  <div class="group-3 mt-6">
+                  <div class="group-3">
                     <button
                       type="submit"
-                      class="overlap-3 w-full py-3 rounded bg-blue-600 text-white"
+                      class="overlap-3 bg-blue-600 text-white"
                       id="nextButton"
                     >
                       <div class="text-wrapper-9">회원가입</div>

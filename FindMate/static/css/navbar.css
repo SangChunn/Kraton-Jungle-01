@@ -58,7 +58,7 @@
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 #navbar .link:hover {
-  color: var(--color-brand-700, #0b7a3b);
+  color: var(--n-300);
   background: transparent; /* 스샷 느낌: 배경 변화 없이 색만 */
 }
 
@@ -77,12 +77,11 @@
   margin-right: 100px;
 }
 #navbar .btn-primary {
-  background: var(--color-brand-700, #0b7a3b);
-  color: #fff;
+  background: var(--color-bg-soft, #f6f7f9);
+  color: var(--color-text-700, #6b7280);
+  border: 1px solid var(--n-300);
 }
-#navbar .btn-primary:hover {
-  background: color-mix(in oklab, var(--color-brand-700, #0b7a3b) 92%, white);
-}
+
 #navbar .btn-primary:active {
   transform: translateY(1px);
 }

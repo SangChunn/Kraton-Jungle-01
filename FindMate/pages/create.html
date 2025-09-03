@@ -13,20 +13,27 @@
   <body class="bg-gray-50">
     <!-- NAV -->
     <div id="navbar">
-      <a class="logo" href="{{ url_for('home') }}">
-        <img
+      <a class="logo" href="/"
+        ><img
           src="{{ url_for('static', filename='IMG/book.png') }}"
-          alt="icon" id="bookIcon"
-        />
-        FindMate
-      </a>
+          alt="icon"
+          id="bookIcon"
+        />FindMate</a
+      >
       <nav class="nav-right">
         {% if user %}
-          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
-          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃 
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+          </svg>
+        </a>
         {% else %}
-          <a href="{{ url_for('login') }}" class="link">로그인</a>
-          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        <a href="{{ url_for('signup') }}" class="link">회원가입</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary" >로그인<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+</svg>
+</a>
         {% endif %}
       </nav>
     </div>
@@ -99,7 +106,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700">내용</label>
               <textarea name="content" rows="5"
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3"></textarea>
+                class="mt-1 w-full rounded-lg border border-gray-300 p-3 resize-none"></textarea>
             </div>
           </div>
 
