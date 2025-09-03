@@ -168,7 +168,10 @@ function pagerBtn(label, onClick, disabled = false) {
 function cardEl(item) {
   const el = document.createElement("article");
   el.className =
-    "h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col";
+    "h-full bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col " +
+    "cursor-pointer transition hover:shadow-md hover:-translate-y-0.5";
+  el.setAttribute("role", "button");
+  el.tabIndex = 0;
 
   const displayCat =
     catKeyToName.get(resolveItemCatKey(item.category)) ?? String(item.category ?? "");
@@ -198,6 +201,14 @@ function cardEl(item) {
       <span>⏱ ${item.durationMin ?? ""}분</span>
     </div>
   `;
+
+  const to = `/study/${item.id}`;
+  const go = () => { window.location.href = to; };
+  el.addEventListener("click", go);
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") go();
+  });
+
   return el;
 }
 
