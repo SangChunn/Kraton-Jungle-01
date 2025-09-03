@@ -1,17 +1,49 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify
-from database import get_db, ensure_user_indexes, ensure_category_indexes
+from database import get_db, ensure_user_indexes, ensure_category_indexes,ensure_study_indexes
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import ASCENDING
-
+from datetime import datetime, timedelta
+import re
 
 app = Flask(__name__, template_folder="pages", static_folder="static")
 app.secret_key = "secret-key"  # 세션 관리용
 
-@app.before_first_request
-def bootstrap():
-    ensure_user_indexes()
-    ensure_category_indexes()   
+# @app.before_first_request
+# def bootstrap():
+#     ensure_user_indexes()
+#     ensure_category_indexes()   
+#     ensure_study_indexes()   
     
+def parse_korean_timespan(raw: str):
+    if not raw:
+        return None, None, None
+    m = re.match(r"\s*(\d+)월\s*(\d+)일\s*(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})\s*", raw)
+    if not m:
+        return None, None, None
+    mon, day, sh, sm, eh, em = map(int, m.groups())
+    year = datetime.now().year
+    start = datetime(year, mon, day, sh, sm)
+    end = datetime(year, mon, day, eh if eh < 24 else eh - 24, em)
+    if eh >= 24:
+        end += timedelta(days=1)
+    duration_min = int((end - start).total_seconds() // 60) if end > start else None
+    return start, end, duration_min
+
+# Mongo -> SSR payload 직렬화 ----
+def serialize_study(doc):
+    def iso(dt):
+        return dt.isoformat() if isinstance(dt, datetime) else ""
+    return {
+        "id": str(doc.get("_id")),
+        "title": doc.get("title", ""),
+        "desc": doc.get("content", ""),
+        "category": doc.get("category", ""),   # key로 저장
+        "host": doc.get("host", ""),
+        "capacity": doc.get("capacity", 0),
+        "badge": "모집중" if doc.get("active", True) else "마감",
+        "dateISO": iso(doc.get("start_at") or doc.get("created_at")),
+        "durationMin": doc.get("duration_min", ""),
+    }
     
 @app.route("/mypage")
 def mypage():
@@ -19,11 +51,66 @@ def mypage():
         return redirect(url_for("login"))
     return render_template("mypage.html", user=session.get("user"))
 
-@app.route("/create")
+@app.route("/create", methods=["GET", "POST"])
 def create():
     if "user" not in session:
         return redirect(url_for("login"))
-    return render_template("create.html", user=session.get("user"))
+
+    db = get_db()
+    cats = list(db["categories"].find({"active": True}, {"_id": 0, "key": 1, "name": 1}).sort("order", 1))
+
+    if request.method == "GET":
+        return render_template("create.html", user=session.get("user"), categories=cats)
+
+    # --- POST 수신 필드 (폼과 1:1) ---
+    title = (request.form.get("title") or "").strip()
+    content = (request.form.get("content") or "").strip()
+    category = (request.form.get("category") or "").strip().lower()
+    capacity = int(request.form.get("capacity") or 0)
+    date_iso = (request.form.get("dateISO") or "").strip()          # "YYYY-MM-DDTHH:MM"
+    duration_min = int(request.form.get("durationMin") or 0)
+
+    # --- 검증 ---
+    if not title or not category or capacity <= 0:
+        flash("제목/카테고리/모집인원은 필수입니다.", "error")
+        return render_template("create.html", user=session.get("user"), categories=cats)
+
+    if not db["categories"].find_one({"key": category, "active": True}):
+        flash("유효하지 않은 카테고리입니다.", "error")
+        return render_template("create.html", user=session.get("user"), categories=cats)
+
+    start_at = None
+    end_at = None
+    if date_iso:
+        try:
+            # "YYYY-MM-DDTHH:MM" → Python datetime (naive)
+            start_at = datetime.fromisoformat(date_iso)
+        except ValueError:
+            flash("날짜/시간 형식이 올바르지 않습니다.", "error")
+            return render_template("create.html", user=session.get("user"), categories=cats)
+    if start_at and duration_min > 0:
+        end_at = start_at + timedelta(minutes=duration_min)
+
+    # --- 문서 저장 ---
+    doc = {
+        "title": title,
+        "content": content,
+        "category": category,                       # key 저장
+        "host": session["user"].get("name", ""),
+        "hostId": session["user"]["userId"],
+        "capacity": capacity,
+        "applicants": 0,
+        "active": True,                             # 기본 모집중
+        "created_at": datetime.utcnow(),
+    }
+    if start_at:         doc["start_at"] = start_at
+    if end_at:           doc["end_at"] = end_at
+    if duration_min > 0: doc["duration_min"] = duration_min
+
+    db["studies"].insert_one(doc)
+    flash("스터디가 등록되었습니다.", "success")
+    return redirect(url_for("home"))
+
 
 
 # 메인 페이지
@@ -31,18 +118,24 @@ def create():
 def home():
     user = session.get("user")
     db = get_db()
+    
     cats = list(
         db["categories"]
         .find({"active": True}, {"_id": 0, "key": 1, "name": 1})
         .sort("order", ASCENDING)
     )
+    
+    # 최신순 기본(생성일 내림차순)
+    raw = list(
+        db["studies"].find({"active": True}).sort("created_at", -1)
+    )
+    studies = [serialize_study(d) for d in raw]
 
-    # studies는 아직 미구현이니 빈 배열로
     return render_template(
         "index.html",
         user=user,
-        categories=cats,   # ← [{key, name}, ...]
-        studies=[],
+        categories=cats,   
+        studies=studies,
         sort_order="latest",
     )
 
