@@ -1,8 +1,28 @@
+<!--
+  1. hosted_studies
+      * 자료형: 리스트 (List)
+      * 설명: 내가 직접 만든 스터디 모임들의 목록입니다.
+
+  2. attended_studies
+      * 자료형: 리스트 (List)
+      * 설명: 내가 참가한 스터디 모임들의 목록입니다.
+
+  리스트에 포함된 각 스터디의 정보 (객체)
+  위 두 리스트에는 아래와 같은 모양의 딕셔너리(Dictionary)가 여러 개 담겨 있습니다.
+  ┌──────────┬─────────────────┬────────────────────┬───────────────────┐
+  │ 키 (Key) │ 자료형          │ 설명               │ 예시              │
+  ├──────────┼─────────────────┼────────────────────┼───────────────────┤
+  │ title    │ String (문자열) │ 스터디 모임의 제목 │ '알고리즘 스터디' │
+  │ date     │ String (문자열) │ 스터디 모임의 날짜 │ '2025-09-15'      │
+  └──────────┴─────────────────┴────────────────────┴───────────────────┘
+-->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link
       rel="stylesheet"
       as="style"
@@ -11,7 +31,7 @@
     />
     <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
     <link rel="stylesheet" href="/FindMate/static/css/style.css" />
-    <title>Document</title>
+    <title>My Page</title>
   </head>
   <body>
     <div id="navbar">
@@ -30,5 +50,69 @@
        <button class="btn btn-primary">로그아웃</button> -->
       </nav>
     </div>
+    <div class="flex flex-col bg-gray-50 min-h-[calc(100vh-64px)]">
+      <main class="container mx-auto px-4 py-8">
+        <div class="mt-12 mb-24">
+          <h2 class="mt-4 text-2xl font-extrabold text-gray-800 clamp-2 wrap-anywhere"> 내가 만든 스터디 모임 </h2>
+
+          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
+            {% if hosted_studies %}
+                <div class="flex overflow-x-auto gap-8 p-6">
+                  {% for hosted_study in hosted_studies %}
+                  <!-- 이벤트 카드 생성 -->
+                  <article class="flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer">
+                    <div class="h-full flex flex-col justify-between">
+                      <div class="flex-1 flex items-center justify-center rounded-lg mb-4">
+                        <div class="text-center">
+                          <h3 class="font-bold text-xl font-extrabold text-gray-800 mb-2 text-balance"> {{ hosted_study.title }} </h3>
+                          <p class="text-gray-600 font-medium"> {{ hosted_study.date }} </p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                  {% endfor %}
+                  <!-- 오른쪽 화살표 버튼 -->
+                </div>
+            {% else %}
+              <div class="w-full flex justify-center items-center h-48 rounded-2xl">
+                <p class="text-gray-500">해당하는 스터디가 없습니다.</p>
+              </div>            
+            {% endif %}
+          </div>    
+        </div>
+
+        <!-- 내가 참여한 이벤트 -->
+        <div class="mb-24">
+          <h2 class="mt-4 text-2xl font-extrabold text-gray-800 clamp-2 wrap-anywhere"> 내가 참여한 스터디 모임 </h2>
+          <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
+            {% if attended_studies %}
+                <div class="flex overflow-x-auto gap-8 p-6">
+                  {% for attended_study in attended_studies %}
+                  <!-- 이벤트 카드 생성 -->
+                  <article class="flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer">
+                    <div class="h-full flex flex-col justify-between">
+                      <div class="flex-1 flex items-center justify-center rounded-lg mb-4">
+                        <div class="text-center">
+                          <h3 class="font-bold text-xl font-extrabold text-gray-800 mb-2 text-balance"> {{ attended_study.title }} </h3>
+                          <p class="text-gray-600 font-medium"> {{ attended_study.date }} </p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                  {% endfor %}
+                  <!-- 오른쪽 화살표 버튼 -->
+                </div>
+            {% else %}
+              <div class="w-full flex justify-center items-center h-48 rounded-2xl">
+                <p class="text-gray-500">해당하는 스터디가 없습니다.</p>
+              </div>            
+            {% endif %}
+          </div>    
+        </div>
+      </main>
+    </div>
   </body>
 </html>
+
+
+<!-- svg 그리지 말고 적당한 아이콘으로 바꾸기 -->
