@@ -2,95 +2,185 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>회원가입</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind (CDN 하나만 사용) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Pretendard -->
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+
+    <!-- Project CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/signup.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
+
+    <title>FindMate | 회원가입</title>
   </head>
-  <body class="bg-gray-50">
-    <!-- 네비게이션 -->
-    <div class="p-4 bg-white shadow flex justify-between">
-      <a href="{{ url_for('home') }}" class="font-bold">FindMate</a>
-      <nav>
-        {% if session.user %}
-        <span class="mr-4">안녕하세요, {{ session.user.name }}님</span>
-        <a href="{{ url_for('logout') }}" class="text-blue-500">로그아웃</a>
+  <body class="font-[Pretendard]">
+    <!-- Navbar -->
+    <div id="navbar" class="flex items-center justify-between px-4 py-3 shadow">
+      <a class="logo flex items-center gap-2" href="{{ url_for('home') }}">
+        <img
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+          alt="icon"
+          id="bookIcon"
+          class="w-6 h-6"
+        />
+        <span class="font-semibold">FindMate</span>
+      </a>
+      <nav class="nav-right flex items-center gap-3">
+        {% if current_user %}
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
         {% else %}
-        <a href="{{ url_for('login') }}" class="mr-4 text-blue-500">로그인</a>
-        <a href="{{ url_for('signup') }}" class="text-blue-500">회원가입</a>
+        <a href="{{ url_for('login') }}" class="link">로그인</a>
+        <a href="{{ url_for('signup) }}" class="btn btn-primary">회원가입</a>
         {% endif %}
       </nav>
     </div>
 
-    <!-- 회원가입 폼 -->
-    <div class="max-w-md mx-auto mt-20 bg-white p-8 rounded-lg shadow">
-      <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
+    <!-- Content -->
+    <div class="element max-w-xl mx-auto px-4 py-10">
+      <div class="frame-wrapper">
+        <div class="frame">
+          <div class="div">
+            <div class="group-wrapper"><div class="group"></div></div>
 
-      <!-- 플래시 메시지 출력 -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %}
-      <div class="mb-4">
-        {% for category, message in messages %}
-        <p
-          class="{% if category == 'error' %}text-red-500{% else %}text-green-600{% endif %}"
-        >
-          {{ message }}
-        </p>
-        {% endfor %}
+            <div class="frame-3">
+              <div class="frame-4">
+                <div class="text-wrapper-5 text-2xl font-semibold mb-6">
+                  아이디와 비밀번호를<br />입력해주세요
+                </div>
+
+                <form
+                  id="registrationForm"
+                  data-join-url="{{ url_for('api_join') }}"
+                  data-email-check-url-template="{{ url_for('api_email_check', email='__EMAIL__') }}"
+                  data-login-url="{{ url_for('login') }}"
+                >
+                  <div class="frame-5 space-y-5">
+                    <!-- 이름 -->
+                    <div class="frame-6">
+                      <div class="text-wrapper-6 mb-2">이름</div>
+                      <div class="frame-7">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="text"
+                              id="nickname"
+                              class="input-field border w-full p-2 rounded"
+                              placeholder=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          id="nicknameError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <!-- 아이디 -->
+                    <div class="frame-6">
+                      <div class="text-wrapper-6 mb-2">아이디</div>
+                      <div class="frame-7">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="text"
+                              id="username"
+                              class="input-field border w-full p-2 rounded"
+                              placeholder="ID 입력"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          id="usernameError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <!-- 비밀번호 -->
+                    <div class="frame-6">
+                      <div class="text-wrapper-6 mb-2">비밀번호</div>
+                      <div class="frame-9">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="password"
+                              id="password"
+                              class="input-field border w-full p-2 rounded"
+                              placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          id="passwordError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <!-- 비밀번호 확인 -->
+                    <div class="frame-6">
+                      <div class="text-wrapper-6 mb-2">비밀번호 확인</div>
+                      <div class="frame-9">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="password"
+                              id="confirmPassword"
+                              class="input-field border w-full p-2 rounded"
+                              placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
+                            />
+                          </div>
+                        </div>
+                        <p
+                          id="confirmPasswordError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="group-3 mt-6">
+                    <button
+                      type="submit"
+                      class="overlap-3 w-full py-3 rounded bg-blue-600 text-white"
+                      id="nextButton"
+                    >
+                      <div class="text-wrapper-9">회원가입</div>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      {% endif %} {% endwith %}
-
-      <form method="POST" action="{{ url_for('signup') }}">
-        <div class="mb-4">
-          <label class="block text-sm font-medium">이름</label>
-          <input
-            type="text"
-            name="name"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">아이디</label>
-          <input
-            type="text"
-            name="userId"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">비밀번호</label>
-          <input
-            type="password"
-            name="password"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">비밀번호 확인</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-500 text-white py-2 rounded"
-        >
-          회원가입
-        </button>
-      </form>
-
-      <p class="mt-4 text-center">
-        이미 계정이 있으신가요?
-        <a href="{{ url_for('login') }}" class="text-blue-500">로그인</a>
-      </p>
     </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+    <script
+      src="https://kit.fontawesome.com/72f07bc14e.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
