@@ -4,16 +4,138 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import ASCENDING
 from datetime import datetime, timedelta
 import re
+from bson import ObjectId
 
 app = Flask(__name__, template_folder="pages", static_folder="static")
 app.secret_key = "secret-key"  # 세션 관리용
 
+from database import get_db
+db = get_db()
+
+# applicants가 없거나 배열이 아닌 문서 → 배열로 초기화
+db["studies"].update_many(
+    {"$or": [
+        {"applicants": {"$exists": False}},
+        {"applicants": {"$type": "int"}},
+        {"applicants": {"$type": "string"}},
+    ]},
+    {"$set": {"applicants": []}}
+)
 # @app.before_first_request
 # def bootstrap():
 #     ensure_user_indexes()
 #     ensure_category_indexes()   
 #     ensure_study_indexes()   
     
+    
+# ---- 유틸: 스터디 로드 ----
+def _get_study_or_404(study_id):
+    db = get_db()
+    try:
+        oid = ObjectId(study_id)
+    except Exception:
+        return None
+    return db["studies"].find_one({"_id": oid})
+
+# ---- 상세 페이지 ----
+@app.route("/study/<study_id>")
+def study_detail(study_id):
+    db = get_db()
+    doc = _get_study_or_404(study_id)
+    if not doc:
+        flash("존재하지 않는 스터디입니다.", "error")
+        return redirect(url_for("home"))
+
+    user = session.get("user")
+    is_host = bool(user) and user.get("userId") == doc.get("hostId")
+    applicants = doc.get("applicants") or []   # [{userId, name, applied_at}]
+    applicants_count = len(applicants)
+    capacity = int(doc.get("capacity", 0))
+    is_full = capacity > 0 and applicants_count >= capacity
+    already_applied = bool(user) and any(a.get("userId") == user.get("userId") for a in applicants)
+
+    # 카테고리 이름 매핑 위해 categories도 같이 전달(선택)
+    cats = list(db["categories"].find({"active": True}, {"_id": 0, "key": 1, "name": 1}).sort("order", 1))
+    cat_map = {c["key"]: c["name"] for c in cats}
+    category_name = cat_map.get(doc.get("category"), doc.get("category"))
+
+    return render_template(
+        "apply.html",
+        user=user,
+        study=doc,
+        category_name=category_name,
+        is_host=is_host,
+        is_full=is_full,
+        already_applied=already_applied,
+        applicants_count=applicants_count,
+        capacity=capacity,
+    )
+
+# ---- 신청 API ----
+@app.route("/api/studies/<study_id>/apply", methods=["POST"])
+def api_study_apply(study_id):
+    if "user" not in session:
+        return jsonify({"isSuccess": False, "code": "AUTH401", "message": "로그인이 필요합니다."}), 401
+
+    db = get_db()
+    doc = _get_study_or_404(study_id)
+    if not doc:
+        return jsonify({"isSuccess": False, "code": "NOT_FOUND", "message": "존재하지 않는 스터디"}), 404
+
+    user = session["user"]
+    if user["userId"] == doc.get("hostId"):
+        return jsonify({"isSuccess": False, "code": "IS_HOST", "message": "주최자는 신청할 수 없습니다."}), 400
+
+    if not doc.get("active", True):
+        return jsonify({"isSuccess": False, "code": "CLOSED", "message": "이미 모집이 마감되었습니다."}), 400
+
+    applicants = doc.get("applicants") or []
+    if any(a.get("userId") == user["userId"] for a in applicants):
+        return jsonify({"isSuccess": False, "code": "DUP", "message": "이미 신청하셨습니다."}), 409
+
+    capacity = int(doc.get("capacity", 0))
+    applicants_count = len(applicants)
+    if capacity > 0 and applicants_count >= capacity:
+        return jsonify({"isSuccess": False, "code": "FULL", "message": "정원이 가득 찼습니다."}), 400
+
+    # 등록
+    apply_doc = {"userId": user["userId"], "name": user.get("name", ""), "applied_at": datetime.utcnow()}
+    updated = db["studies"].find_one_and_update(
+        {"_id": doc["_id"], "active": True},
+        {
+            "$addToSet": {"applicants": apply_doc}
+        },
+        return_document=True
+    )
+
+    # 정원 도달 시 자동 마감(선택)
+    if updated:
+        applicants = updated.get("applicants") or []
+        if capacity > 0 and len(applicants) >= capacity:
+            db["studies"].update_one({"_id": updated["_id"]}, {"$set": {"active": False}})
+
+    return jsonify({"isSuccess": True, "code": "COMMON200", "message": "신청 완료"}), 200
+
+# ---- 주최자: 모집 완료 처리 ----
+@app.route("/api/studies/<study_id>/close", methods=["POST"])
+def api_study_close(study_id):
+    if "user" not in session:
+        return jsonify({"isSuccess": False, "code": "AUTH401", "message": "로그인이 필요합니다."}), 401
+
+    db = get_db()
+    doc = _get_study_or_404(study_id)
+    if not doc:
+        return jsonify({"isSuccess": False, "code": "NOT_FOUND", "message": "존재하지 않는 스터디"}), 404
+
+    if session["user"]["userId"] != doc.get("hostId"):
+        return jsonify({"isSuccess": False, "code": "FORBIDDEN", "message": "주최자만 마감할 수 있습니다."}), 403
+
+    if not doc.get("active", True):
+        return jsonify({"isSuccess": False, "code": "ALREADY", "message": "이미 마감되었습니다."}), 400
+
+    db["studies"].update_one({"_id": doc["_id"]}, {"$set": {"active": False}})
+    return jsonify({"isSuccess": True, "code": "COMMON200", "message": "모집이 마감되었습니다."}), 200
+
 def parse_korean_timespan(raw: str):
     if not raw:
         return None, None, None
@@ -99,7 +221,7 @@ def create():
         "host": session["user"].get("name", ""),
         "hostId": session["user"]["userId"],
         "capacity": capacity,
-        "applicants": 0,
+        "applicants": [],                           # 배열로 저장 (중요)
         "active": True,                             # 기본 모집중
         "created_at": datetime.utcnow(),
     }

@@ -1,154 +1,164 @@
-<!--
-{string} recruit - 모집 여부
-{string} category - 카테고리 
-{number} current - 현재 인원
-{number} capacity - 최대 인원
-{string} title - 스터디 제목
-{string} username - 주최자 이름
-{date} date - 스터디 날짜와 시작 시간 (YYYY-MM-DDTHH:mm 형식)
-{number} duration - 소요 시간 (분 단위)
-{string} description - 스터디 설명
--->
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      as="style"
-      crossorigin
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-    />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
-    <link rel="stylesheet" href="/FindMate/static/css/style.css" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div id="navbar">
-      <a class="logo" href="/"
-        ><img
-          src="/FindMate/views/book-open-svgrepo-com.png"
-          alt="icon"
-          id="bookIcon"
-        />FindMate</a
-      >
-      <nav class="nav-right">
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    as="style"
+    crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 정적 리소스는 url_for 사용 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <title>{{ study.title }} | FindMate</title>
+</head>
+<body class="font-[Pretendard] bg-gray-50">
+  <!-- NAV -->
+  <div id="navbar" class="flex items-center justify-between px-4 py-3 shadow">
+    <a class="logo flex items-center gap-2" href="{{ url_for('home') }}">
+      <img
+        src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+        alt="icon"
+        id="bookIcon"
+        class="w-6 h-6"
+      />
+      <span class="font-semibold">FindMate</span>
+    </a>
+    <nav class="nav-right">
+      {% if user %}
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+      {% else %}
         <a href="{{ url_for('login') }}" class="link">로그인</a>
         <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
-        <!-- 로그인 상태라면 -->
-        <!-- <a href="/mypage" class="link">마이페이지</a>
-       <button class="btn btn-primary">로그아웃</button> -->
-      </nav>
-    </div>
-    <div class="flex items-center justify-center bg-gray-50 min-h-[calc(100vh-64px)] py-6 px-10">
-      <!-- 카드 -->
-      <main class="max-w-4xl mx-auto pt-10 pb-20 w-full">
-        <article
-          class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10 flex flex-col"
-        >
-          <form 
-            id="form-container" 
-            class="space-y-6" 
-            onsubmit="return submitApplication(event)"  
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"> {{ recruit }} </span>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200"> {{ category }} </span>
-              </div>
-              <span class="text-sm text-gray-500">👥 {{ current }} / {{ capacity }}</span>
-            </div>
-            <div>
-              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                스터디 제목
-              </h3>
-              <input
-                id="study-title"
-                type="text"
-                value="{{ title }}"
-                class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                readonly
-              />
-            </div>
-            
-            <div>
-              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                주최자
-              </h3>
-              <input
-                id="study-host"
-                type="text"
-                value="{{ username }}"
-                class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                readonly
-              />
-            </div>
+      {% endif %}
+    </nav>
+  </div>
 
-            <div class="flex gap-6">
-              <div class="w-1/2">
-                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                  스터디 시간
-                </h3>
-                <input
-                  id="study-date"
-                  type="datetime-local"
-                  value="{{ date }}"
-                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
-                  readonly
-                />
-              </div>
-              <div class="w-1/2">
-                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                  소요 시간
-                </h3>
-                <input
-                  id="study-duration"
-                  type="text"
-                  value="{{ duration }} 분" 
-                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
-                  readonly
-                /> 
-              </div>
-            </div>
+  <main class="max-w-3xl mx-auto px-6 py-10">
+    <!-- Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for category, message in messages %}
+            <div class="{{ 'text-red-600' if category=='error' else 'text-green-600' }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-            <div>
-              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                내용
-              </h3>
-              <textarea
-                id="study-description"
-                class="mt-4 p-3 border border-gray-300 rounded-lg w-full h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                placeholder="스터디 설명이 존재하지 않습니다."
-                readonly
-              > {{ description }}
-              </textarea>
-            </div>
+    <article class="bg-white rounded-2xl border shadow-sm p-8">
+      <header class="mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                         {{ 'bg-emerald-50 text-emerald-700 border border-emerald-200' if study.active else 'bg-gray-100 text-gray-500 border border-gray-200' }}">
+              {{ '모집중' if study.active else '마감' }}
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+              {{ category_name }}
+            </span>
+          </div>
+          <span class="text-sm text-gray-500">👥 {{ applicants_count }}/{{ capacity }}</span>
+        </div>
+        <h1 class="mt-4 text-2xl font-extrabold text-gray-900">{{ study.title }}</h1>
+      </header>
 
-            <div class="mt-auto flex justify-end gap-4">
-              <button 
-                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-                type="submit"
-              > 
-                신청
-              </button>
-              <!-- <button 
-                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-red-600 hover:bg-gray-200"
-                type="button"
-              >
-                취소
-              </button> -->
-              <!-- 나중에 백엔드랑 연동할 때 추가 -->
-            </div>
-          </form>
-        </article>
-      </main>
-    </div>
-    <script
-      type="text/javascript"
-      src="/FindMate/static/js/create.js"
-    ></script>
-  </body>
+      <section class="space-y-2 text-sm text-gray-700">
+        <div>👤 주최자: <strong>{{ study.host }}</strong></div>
+        {% if study.start_at %}
+          <div>📅 시작: {{ study.start_at.strftime("%Y-%m-%d %H:%M") }}</div>
+        {% endif %}
+        {% if study.duration_min %}
+          <div>⏱ 소요시간: {{ study.duration_min }}분</div>
+        {% endif %}
+      </section>
+
+      <hr class="my-6" />
+
+      <section class="prose max-w-none text-gray-800 whitespace-pre-wrap">
+        {{ study.content or '스터디 설명이 없습니다.' }}
+      </section>
+
+      <div class="mt-8 flex items-center gap-3">
+        {% if user %}
+          {% if is_host %}
+            <button id="btn-close"
+                    class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                    {% if not study.active %}disabled{% endif %}>
+              모집 완료
+            </button>
+          {% else %}
+            <button id="btn-apply"
+                    class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                    {% if already_applied or not study.active or is_full %}disabled{% endif %}>
+              신청하기
+            </button>
+            {% if already_applied %}
+              <span class="text-sm text-emerald-600">이미 신청하셨습니다.</span>
+            {% elif is_full %}
+              <span class="text-sm text-red-600">정원이 가득 찼습니다.</span>
+            {% elif not study.active %}
+              <span class="text-sm text-gray-600">이미 마감되었습니다.</span>
+            {% endif %}
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('login') }}" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">로그인 후 신청</a>
+        {% endif %}
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const studyId = "{{ study._id }}";
+
+    async function call(url, opts={}) {
+      const res = await fetch(url, {
+        credentials: 'include',
+        headers: {'Accept':'application/json','Content-Type':'application/json'},
+        ...opts
+      });
+      let data = {};
+      try { data = await res.json(); } catch(e) {}
+      if (!res.ok || data.isSuccess === false) {
+        throw new Error(data.message || '요청에 실패했습니다.');
+      }
+      return data;
+    }
+
+    const btnApply = document.getElementById('btn-apply');
+    if (btnApply) {
+      btnApply.addEventListener('click', async () => {
+        try {
+          btnApply.disabled = true;
+          await call(`/api/studies/${studyId}/apply`, { method: 'POST' });
+          alert('신청이 완료되었습니다.');
+          location.reload();
+        } catch (e) {
+          alert(e.message || '신청 중 오류');
+          btnApply.disabled = false;
+        }
+      });
+    }
+
+    const btnClose = document.getElementById('btn-close');
+    if (btnClose) {
+      btnClose.addEventListener('click', async () => {
+        if (!confirm('모집을 마감하시겠습니까?')) return;
+        try {
+          btnClose.disabled = true;
+          await call(`/api/studies/${studyId}/close`, { method: 'POST' });
+          alert('모집이 마감되었습니다.');
+          location.reload();
+        } catch (e) {
+          alert(e.message || '마감 처리 중 오류');
+          btnClose.disabled = false;
+        }
+      });
+    }
+  </script>
+</body>
 </html>
