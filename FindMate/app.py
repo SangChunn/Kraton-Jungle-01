@@ -232,6 +232,7 @@ def serialize_study(doc):
         "host": doc.get("host", ""),
         "capacity": doc.get("capacity", 0),
         "badge": "모집중" if doc.get("active", True) else "마감",
+        "applicants": len(doc.get("applicants") or []),
         "dateISO": iso(doc.get("start_at") or doc.get("created_at")),
         "durationMin": doc.get("duration_min", ""),
     }

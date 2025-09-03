@@ -119,27 +119,6 @@
   align-items: center;
 }
 
-.element .text-wrapper-2 {
-  font-family: "Pretendard-Bold", Helvetica;
-  font-weight: 700;
-  color: var(--main-green-3);
-  font-size: 16px;
-  letter-spacing: -0.16px;
-  line-height: normal;
-  white-space: nowrap;
-}
-
-.element .text-wrapper-3 {
-  text-align: center;
-  font-family: "Pretendard-Bold", Helvetica;
-  font-weight: 700;
-  color: var(--main-green-3);
-  font-size: 16px;
-  letter-spacing: -0.16px;
-  line-height: normal;
-  white-space: nowrap;
-}
-
 .element .overlap-wrapper {
   position: relative;
   width: 38px;
@@ -177,7 +156,7 @@
 .element .text-wrapper-5 {
   align-self: stretch;
   height: 58px;
-  margin-top: -1px;
+  margin-top: -100px;
   font-family: "Pretendard-Bold", Helvetica;
   font-weight: 700;
   color: var(--n-800);
