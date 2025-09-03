@@ -1,24 +1,6 @@
-<!--
-  1. hosted_studies
-      * 자료형: 리스트 (List)
-      * 설명: 내가 직접 만든 스터디 모임들의 목록입니다.
-
-  2. attended_studies
-      * 자료형: 리스트 (List)
-      * 설명: 내가 참가한 스터디 모임들의 목록입니다.
-
-  리스트에 포함된 각 스터디의 정보 (객체)
-  위 두 리스트에는 아래와 같은 모양의 딕셔너리(Dictionary)가 여러 개 담겨 있습니다.
-  ┌──────────┬─────────────────┬────────────────────┬───────────────────┐
-  │ 키 (Key) │ 자료형          │ 설명               │ 예시              │
-  ├──────────┼─────────────────┼────────────────────┼───────────────────┤
-  │ title    │ String (문자열) │ 스터디 모임의 제목 │ '알고리즘 스터디' │
-  │ date     │ String (문자열) │ 스터디 모임의 날짜 │ '2025-09-15'      │
-  └──────────┴─────────────────┴────────────────────┴───────────────────┘
--->
-
+<!-- pages/mypage.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,90 +11,183 @@
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
-    <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
-    <link rel="stylesheet" href="/FindMate/static/css/style.css" />
-    <title>My Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <title>마이페이지 | FindMate</title>
+    <style>
+      .row-scroll { scroll-behavior: smooth; overflow-x: auto; scroll-snap-type: x mandatory; }
+      .card { scroll-snap-align: start; min-width: 320px; }
+      .wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
+    </style>
   </head>
-  <body>
+  <body class="font-[Pretendard] bg-gray-50">
+    <!-- NAV -->
     <div id="navbar">
-      <a class="logo" href="/"
-        ><img
-          src="/FindMate/views/book-open-svgrepo-com.png"
+      <a class="logo" href="{{ url_for('home') }}">
+        <img
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
           alt="icon"
           id="bookIcon"
-        />FindMate</a
-      >
+        />
+        FindMate
+      </a>
       <nav class="nav-right">
-        <a href="/FindMate/pages/login.html" class="link">로그인</a>
-        <a href="/FindMate/pages/sign.html" class="btn btn-primary">회원가입</a>
-        <!-- 로그인 상태라면 -->
-        <!-- <a href="/mypage" class="link">마이페이지</a>
-       <button class="btn btn-primary">로그아웃</button> -->
+        {% if user %}
+          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="link">로그인</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        {% endif %}
       </nav>
     </div>
-    <div class="flex flex-col bg-gray-50 min-h-[calc(100vh-64px)]">
-      <main class="container mx-auto px-4 py-8">
-        <div class="mt-12 mb-24">
-          <h2 class="mt-4 text-2xl font-extrabold text-gray-800 clamp-2 wrap-anywhere"> 내가 만든 스터디 모임 </h2>
+
+    <!-- Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="max-w-5xl mx-auto px-6 mt-4">
+          {% for category, message in messages %}
+            <div class="text-sm my-2 {{ 'text-red-500' if category=='error' else 'text-green-600' }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="flex flex-col min-h-[calc(100vh-64px)]">
+      <main class="max-w-5xl mx-auto px-4 py-8 w-full">
+        <!-- 내가 만든 스터디 -->
+        <section class="mt-12 mb-24">
+          <div class="flex items-center justify-between">
+            <h2 class="mt-4 text-2xl font-extrabold text-gray-800">내가 만든 스터디 모임</h2>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-1 border rounded" onclick="scrollRow('hosted', -1)">◀</button>
+              <button class="px-3 py-1 border rounded" onclick="scrollRow('hosted', 1)">▶</button>
+            </div>
+          </div>
 
           <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
             {% if hosted_studies %}
-                <div class="flex overflow-x-auto gap-8 p-6">
-                  {% for hosted_study in hosted_studies %}
-                  <!-- 이벤트 카드 생성 -->
-                  <article class="flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer">
-                    <div class="h-full flex flex-col justify-between">
-                      <div class="flex-1 flex items-center justify-center rounded-lg mb-4">
+              <div id="row-hosted" class="row-scroll flex gap-6 p-2">
+                {% for s in hosted_studies %}
+                  {% set sid = (s.id or s._id)|string %}
+                  {% set is_active = (s.active if s.active is not none else true) %}
+                  {% set when = s.date or s.startText %}
+                  {% set cat = s.category %}
+          
+                  <a href="{{ url_for('study_detail', study_id=sid) }}" class="block no-underline text-inherit">
+                    <article
+                      class="card flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition hover:-translate-y-0.5 cursor-pointer"
+                      role="link"
+                      aria-label="{{ s.title }}"
+                    >
+                      <div class="h-full flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                          <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                              {{ 'bg-emerald-50 text-emerald-700 border border-emerald-200' if is_active else 'bg-gray-100 text-gray-500 border border-gray-200' }}">
+                              {{ '모집중' if is_active else '마감' }}
+                            </span>
+                            {% if cat %}
+                              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                                {% if cat_map %}{{ cat_map.get(cat, cat) }}{% else %}{{ cat }}{% endif %}
+                              </span>
+                            {% endif %}
+                          </div>
+                          <span class="text-sm text-gray-500">
+                            👥 {{ s.applicants_count|default(0) }}/{{ s.capacity|default('-') }}
+                          </span>
+                        </div>
+          
                         <div class="text-center">
-                          <h3 class="font-bold text-xl font-extrabold text-gray-800 mb-2 text-balance"> {{ hosted_study.title }} </h3>
-                          <p class="text-gray-600 font-medium"> {{ hosted_study.date }} </p>
+                          <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere">
+                            {{ s.title }}
+                          </h3>
+                          <p class="text-gray-600 text-sm">{{ when or '' }}</p>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                  {% endfor %}
-                  <!-- 오른쪽 화살표 버튼 -->
-                </div>
+                    </article>
+                  </a>
+                {% endfor %}
+              </div>
             {% else %}
               <div class="w-full flex justify-center items-center h-48 rounded-2xl">
-                <p class="text-gray-500">해당하는 스터디가 없습니다.</p>
-              </div>            
+                <p class="text-gray-500">주최한 스터디가 없습니다.</p>
+              </div>
             {% endif %}
-          </div>    
-        </div>
+          </div>
+          
+        </section>
 
-        <!-- 내가 참여한 이벤트 -->
-        <div class="mb-24">
-          <h2 class="mt-4 text-2xl font-extrabold text-gray-800 clamp-2 wrap-anywhere"> 내가 참여한 스터디 모임 </h2>
+        <!-- 내가 참여한 스터디 -->
+        <section class="mb-24">
+          <div class="flex items-center justify-between">
+            <h2 class="mt-4 text-2xl font-extrabold text-gray-800">내가 참여한 스터디 모임</h2>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-1 border rounded" onclick="scrollRow('applied', -1)">◀</button>
+              <button class="px-3 py-1 border rounded" onclick="scrollRow('applied', 1)">▶</button>
+            </div>
+          </div>
+
           <div class="mt-4 bg-white rounded-2xl shadow-sm p-6">
             {% if attended_studies %}
-                <div class="flex overflow-x-auto gap-8 p-6">
-                  {% for attended_study in attended_studies %}
-                  <!-- 이벤트 카드 생성 -->
-                  <article class="flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 cursor-pointer">
+              <div id="row-applied" class="row-scroll flex gap-6 p-2">
+                {% for s in attended_studies %}
+                  {% set sid = s.id or s._id %}
+                  {% set is_active = (s.active if s.active is not none else true) %}
+                  {% set when = s.date or s.startText %}
+                  {% set cat = s.category %}
+
+                  <a href="{{ url_for('study_detail', study_id=sid) }}" class="block no-underline text-inherit">
+                    <article
+                      class="card flex-shrink-0 w-80 h-60 p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition hover:-translate-y-0.5 cursor-pointer"
+                      role="link"
+                      aria-label="{{ s.title }}"
+                    >
                     <div class="h-full flex flex-col justify-between">
-                      <div class="flex-1 flex items-center justify-center rounded-lg mb-4">
-                        <div class="text-center">
-                          <h3 class="font-bold text-xl font-extrabold text-gray-800 mb-2 text-balance"> {{ attended_study.title }} </h3>
-                          <p class="text-gray-600 font-medium"> {{ attended_study.date }} </p>
+                      <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                          <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                            {{ 'bg-emerald-50 text-emerald-700 border border-emerald-200' if is_active else 'bg-gray-100 text-gray-500 border border-gray-200' }}">
+                            {{ '모집중' if is_active else '마감' }}
+                          </span>
+                          {% if cat %}
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                              {% if cat_map %}{{ cat_map.get(cat, cat) }}{% else %}{{ cat }}{% endif %}
+                            </span>
+                          {% endif %}
                         </div>
+                        <span class="text-sm text-gray-500">
+                          👥 {{ s.applicants_count|default(0) }}/{{ s.capacity|default('-') }}
+                        </span>
+                      </div>
+
+                      <div class="text-center">
+                        <h3 class="font-extrabold text-lg text-gray-800 mb-2 wrap-anywhere">
+                          {{ s.title }}
+                        </h3>
+                        <p class="text-gray-600 text-sm">{{ when or '' }}</p>
                       </div>
                     </div>
                   </article>
-                  {% endfor %}
-                  <!-- 오른쪽 화살표 버튼 -->
-                </div>
+                {% endfor %}
+              </div>
             {% else %}
               <div class="w-full flex justify-center items-center h-48 rounded-2xl">
-                <p class="text-gray-500">해당하는 스터디가 없습니다.</p>
-              </div>            
+                <p class="text-gray-500">신청한 스터디가 없습니다.</p>
+              </div>
             {% endif %}
-          </div>    
-        </div>
+          </div>
+        </section>
       </main>
     </div>
+
+    <script>
+      function scrollRow(which, dir) {
+        const el = document.getElementById(which === 'hosted' ? 'row-hosted' : 'row-applied');
+        if (!el) return;
+        const step = 360; // 카드 너비+간격
+        el.scrollLeft += dir * step;
+      }
+    </script>
   </body>
 </html>
-
-
-<!-- svg 그리지 말고 적당한 아이콘으로 바꾸기 -->
