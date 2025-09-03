@@ -106,7 +106,7 @@ function getVisibleStudies() {
       withinDateRange(s.dateISO) &&
       matchesDuration(s.durationMin)
   );
-  list.sort((a, b) => {
+  list.sort((b, a) => {
     const da = new Date(a.dateISO);
     const db = new Date(b.dateISO);
     const aTime = Number.isNaN(da.getTime()) ? 0 : da.getTime();
