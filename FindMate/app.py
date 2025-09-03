@@ -21,6 +21,75 @@ db["studies"].update_many(
     ]},
     {"$set": {"applicants": []}}
 )
+
+def serialize_study_small(doc):
+    def fmt(dt):
+        return dt.strftime("%Y-%m-%d %H:%M") if isinstance(dt, datetime) else ""
+    return {
+        "id": str(doc.get("_id")),
+        "title": doc.get("title", ""),
+        "category": doc.get("category", ""),          # key
+        "active": doc.get("active", True),
+        "startText": fmt(doc.get("start_at") or doc.get("created_at")),
+        "capacity": int(doc.get("capacity", 0)),
+        "applicants_count": len(doc.get("applicants") or []),
+        "host": doc.get("host", ""),
+    }
+
+# app.py
+from datetime import datetime
+from flask import redirect, url_for, render_template, session
+from pymongo import ASCENDING, DESCENDING
+
+def _fmt(dt):
+    return dt.strftime("%Y-%m-%d %H:%M") if isinstance(dt, datetime) else ""
+
+def _serialize_study_small(doc):
+    start = doc.get("start_at") or doc.get("created_at")
+    return {
+        "id": str(doc.get("_id")),
+        "title": doc.get("title", ""),
+        "category": doc.get("category", ""),         # key
+        "active": doc.get("active", True),
+        "startText": _fmt(start),
+        "capacity": int(doc.get("capacity", 0)),
+        "applicants_count": len(doc.get("applicants") or []),
+        "host": doc.get("host", ""),
+    }
+
+@app.route("/mypage", methods=["GET"])
+def mypage():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    uid = (session["user"]["userId"] or "").lower()
+
+    db = get_db()
+    profile = db["users"].find_one({"userId": uid}, {"_id": 0, "userId": 1, "name": 1})
+
+    # 주최
+    hosted_raw = list(db["studies"].find({"hostId": uid}).sort("created_at", DESCENDING))
+    # 신청
+    applied_raw = list(db["studies"].find({"applicants.userId": uid}).sort("created_at", DESCENDING))
+
+    hosted = [_serialize_study_small(d) for d in hosted_raw]
+    attended = [_serialize_study_small(d) for d in applied_raw]
+
+    cats = list(db["categories"].find({"active": True}, {"_id": 0, "key": 1, "name": 1}).sort("order", ASCENDING))
+    cat_map = {c["key"]: c["name"] for c in cats}
+
+    # 로그로 개수 확인 (디버그용)
+    app.logger.info(f"/mypage uid={uid} hosted={len(hosted)} applied={len(attended)}")
+
+    return render_template(
+        "mypage.html",
+        user=session["user"],
+        profile=profile,
+        hosted_studies=hosted,      
+        attended_studies=attended,  
+        cat_map=cat_map,
+    )
+    
+    
 # @app.before_first_request
 # def bootstrap():
 #     ensure_user_indexes()
@@ -38,7 +107,7 @@ def _get_study_or_404(study_id):
     return db["studies"].find_one({"_id": oid})
 
 # ---- 상세 페이지 ----
-@app.route("/study/<study_id>")
+@app.route("/study/<study_id>", methods=["GET"], endpoint="study_detail")
 def study_detail(study_id):
     db = get_db()
     doc = _get_study_or_404(study_id)
@@ -166,12 +235,7 @@ def serialize_study(doc):
         "dateISO": iso(doc.get("start_at") or doc.get("created_at")),
         "durationMin": doc.get("duration_min", ""),
     }
-    
-@app.route("/mypage")
-def mypage():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    return render_template("mypage.html", user=session.get("user"))
+
 
 @app.route("/create", methods=["GET", "POST"])
 def create():
