@@ -358,7 +358,7 @@ def api_login():
 #)
     user = db.users.find_one(
         {"userId": email},
-        {"_id": 1, "userId": 1, "password_hash": 1}  # _id가 필요 없으면 빼도 됨
+        {"_id": 1, "name":1, "userId": 1, "password_hash": 1}  # _id가 필요 없으면 빼도 됨
     )
 
     if not user or not check_password_hash(user.get("password_hash", ""), password):
@@ -368,7 +368,7 @@ def api_login():
             "message": "아이디 또는 비밀번호가 올바르지 않습니다."
         }), 401
     session.clear()
-    session["userId"] = email
+    # session["userId"] = email
 
     # 로그인 성공 -> 세션에 저장(쿠키는 Flask가 설정)
     session["user"] = {"userId": user["userId"], "name": user.get("name", "")}
