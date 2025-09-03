@@ -48,10 +48,8 @@
         <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
         <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
         {% else %}
-        <a href="{{ url_for('login_page') }}" class="link">로그인</a>
-        <a href="{{ url_for('sign_page') }}" class="btn btn-primary"
-          >회원가입</a
-        >
+        <a href="{{ url_for('login') }}" class="link">로그인</a>
+        <a href="{{ url_for('signup) }}" class="btn btn-primary">회원가입</a>
         {% endif %}
       </nav>
     </div>
@@ -73,7 +71,7 @@
                   id="registrationForm"
                   data-join-url="{{ url_for('api_join') }}"
                   data-email-check-url-template="{{ url_for('api_email_check', email='__EMAIL__') }}"
-                  data-login-url="{{ url_for('login_page') }}"
+                  data-login-url="{{ url_for('login') }}"
                 >
                   <div class="frame-5 space-y-5">
                     <!-- 이름 -->
