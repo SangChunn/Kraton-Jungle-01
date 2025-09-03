@@ -1,0 +1,339 @@
+.error {
+  color: var(--point-red);
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.input-field {
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 15px 23px;
+  border-radius: 12px;
+  background-color: var(--white);
+  font-size: 16px;
+  color: var(--n-800);
+}
+
+.input-field::placeholder {
+  color: var(--n-300);
+}
+
+.element {
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.frame-wrapper {
+  background-color: var(--n-50);
+  width: 100%;
+  max-width: 1536px;
+  height: 864px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame {
+  display: flex;
+  align-items: flex-start;
+}
+
+.div {
+  display: flex;
+  flex-direction: column;
+  width: 512px;
+  align-items: center;
+  gap: 48px;
+  top: 72px;
+  height: 721px;
+}
+
+.group-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 76px;
+  width: 100%;
+  justify-content: center;
+}
+
+.element .group {
+  width: 336px;
+  height: 36px;
+}
+
+.element .overlap {
+  height: 36px;
+}
+
+.element .line {
+  width: 336px;
+  height: 36px;
+  top: 16px;
+  left: 18px;
+}
+
+.element .frame-2 {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+.element .overlap-group-wrapper {
+  position: relative;
+  width: 38px;
+  height: 36px;
+}
+
+.element .overlap-group {
+  width: 36px;
+  height: 36px;
+  background-color: var(--main-green-2);
+  border-radius: 18px;
+  border-color: var(--main-green-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.element .text-wrapper {
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--white);
+  font-size: 16px;
+  letter-spacing: -0.16px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .div-wrapper {
+  width: 36px;
+  background-color: var(--n-50);
+  border-radius: 18px;
+  border: 2px solid var(--main-green-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.element .text-wrapper-2 {
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--main-green-3);
+  font-size: 16px;
+  letter-spacing: -0.16px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .text-wrapper-3 {
+  text-align: center;
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--main-green-3);
+  font-size: 16px;
+  letter-spacing: -0.16px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .overlap-wrapper {
+  position: relative;
+  width: 38px;
+  height: 36px;
+  margin-right: -2px;
+}
+
+.element .text-wrapper-4 {
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--main-green-3);
+  font-size: 16px;
+  letter-spacing: -0.16px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .frame-3 {
+  display: flex;
+  flex-direction: column;
+  height: 525px;
+  align-items: center;
+  gap: 24px;
+  align-self: stretch;
+  width: 100%;
+}
+
+.element .frame-4 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.element .text-wrapper-5 {
+  align-self: stretch;
+  height: 58px;
+  margin-top: -1px;
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--n-800);
+  font-size: 24px;
+  letter-spacing: -0.24px;
+  line-height: normal;
+}
+
+.element .frame-5 {
+  display: flex;
+  flex-direction: column;
+  width: 512px;
+  align-items: flex-start;
+  gap: 24px;
+  flex: 0 0 auto;
+}
+
+.element .frame-6 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.element .text-wrapper-6 {
+  width: fit-content;
+  margin-top: -1px;
+  font-family: "Pretendard-Medium", Helvetica;
+  font-weight: 500;
+  color: var(--n-800);
+  font-size: 18px;
+  letter-spacing: -0.18px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .frame-7 {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.element .group-2 {
+  position: relative;
+  width: 514px;
+  height: 51px;
+  margin-right: -2px;
+}
+
+.element .overlap-group-2 {
+  width: 512px;
+  height: 51px;
+  background-color: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--n-200);
+}
+
+.element .text-wrapper-7 {
+  position: absolute;
+  top: 15px;
+  left: 23px;
+  font-family: "Pretendard-Regular", Helvetica;
+  font-weight: 400;
+  color: var(--n-300);
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .frame-8 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.element .img {
+  width: 16px;
+  height: 16px;
+}
+
+.element .text-wrapper-8 {
+  width: fit-content;
+  margin-top: -1px;
+  font-family: "Pretendard-Regular", Helvetica;
+  font-weight: 400;
+  color: var(--point-red);
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.element .frame-9 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  align-self: stretch;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.element .frame-10 {
+  display: flex;
+  width: 512px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 238px;
+  background-color: var(--main-green-2);
+  border-radius: 12px;
+}
+
+.element .text-wrapper-9 {
+  width: fit-content;
+  margin-top: -1px;
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--white);
+  font-size: 20px;
+  text-align: center;
+  letter-spacing: -0.2px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.group-3 {
+  width: 514px;
+  height: 64px;
+  margin-right: -2px;
+}
+.overlap-3 {
+  width: 512px;
+  height: 64px;
+  background-color: var(--main-green-2);
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+.text-wrapper-9 {
+  font-family: "Pretendard-Bold", Helvetica;
+  font-weight: 700;
+  color: var(--white);
+  font-size: 20px;
+}
+.caution {
+  visibility: hidden;
+}
