@@ -8,6 +8,20 @@ app.secret_key = "secret-key"  # 세션 관리용
 @app.before_first_request
 def bootstrap():
     ensure_user_indexes()  # userId unique index 보장
+    
+    
+@app.route("/mypage")
+def mypage():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    return render_template("mypage.html", user=session.get("user"))
+
+@app.route("/create")
+def create():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    return render_template("create.html", user=session.get("user"))
+
 
 # 메인 페이지
 @app.route("/")
@@ -169,9 +183,3 @@ def logout():
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-@app.route("/mypage")
-def mypage():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    return render_template("mypage.html", user=session.get("user"))
