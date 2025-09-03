@@ -5,11 +5,32 @@ from pymongo import ASCENDING
 from datetime import datetime, timedelta
 import re
 from bson import ObjectId
+from dotenv import load_dotenv
+import os
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__, template_folder="pages", static_folder="static")
-app.secret_key = "secret-key"  # 세션 관리용
+csrf = CSRFProtect(app)
 
-from database import get_db
+load_dotenv()
+
+app.secret_key = os.getenv("SECRET_KEY")
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True,  
+)
+
+@app.before_first_request
+def bootstrap():
+    ensure_user_indexes()
+    ensure_category_indexes()   
+    ensure_study_indexes()   
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html"), 404
+
 db = get_db()
 
 # applicants가 없거나 배열이 아닌 문서 → 배열로 초기화
@@ -64,7 +85,7 @@ def mypage():
     uid = (session["user"]["userId"] or "").lower()
 
     db = get_db()
-    profile = db["users"].find_one({"userId": uid}, {"_id": 0, "userId": 1, "name": 1, "password_hash": 1})
+    profile = db["users"].find_one({"userId": uid}, {"_id": 0, "userId": 1, "name": 1})
 
     # 주최
     hosted_raw = list(db["studies"].find({"hostId": uid}).sort("created_at", DESCENDING))
@@ -88,13 +109,6 @@ def mypage():
         attended_studies=attended,  
         cat_map=cat_map,
     )
-    
-    
-# @app.before_first_request
-# def bootstrap():
-#     ensure_user_indexes()
-#     ensure_category_indexes()   
-#     ensure_study_indexes()   
     
     
 # ---- 유틸: 스터디 로드 ----
@@ -353,10 +367,7 @@ def api_login():
         }), 400
 
     db = get_db()
-    #db["users"].update_one(
-    #{"userId": "test"},  # 소문자 기준
-    #{"$set": {"password_hash": generate_password_hash("Test1234!")}}
-#)
+
     user = db.users.find_one(
         {"userId": email},
         {"_id": 1, "name":1, "userId": 1, "password_hash": 1}  # _id가 필요 없으면 빼도 됨
@@ -369,7 +380,6 @@ def api_login():
             "message": "아이디 또는 비밀번호가 올바르지 않습니다."
         }), 401
     session.clear()
-    # session["userId"] = email
 
     # 로그인 성공 -> 세션에 저장(쿠키는 Flask가 설정)
     session["user"] = {"userId": user["userId"], "name": user.get("name", "")}
@@ -479,5 +489,5 @@ def logout():
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
 
