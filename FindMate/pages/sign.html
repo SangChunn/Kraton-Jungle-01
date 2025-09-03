@@ -1,119 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Tailwind (CDN 하나만 사용) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Pretendard -->
     <link
       rel="stylesheet"
       as="style"
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/FindMate/static/css/signup.css" />
-    <link rel="stylesheet" href="/FindMate/static/css/style.css" />
-    <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
-    <title>sign</title>
+
+    <!-- Project CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/signup.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
+
+    <title>FindMate | 회원가입</title>
   </head>
-  <body>
-    <div id="navbar">
-      <a class="logo" href="/"
-        ><img
-          src="/FindMate/views/book-open-svgrepo-com.png"
+  <body class="font-[Pretendard]">
+    <!-- Navbar -->
+    <div id="navbar" class="flex items-center justify-between px-4 py-3 shadow">
+      <a class="logo flex items-center gap-2" href="{{ url_for('home') }}">
+        <img
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
           alt="icon"
           id="bookIcon"
-        />FindMate</a
-      >
-      <nav class="nav-right">
-        <a href="/FindMate/pages/login.html" class="link">로그인</a>
-        <a href="/FindMate/pages/sign.html" class="btn btn-primary">회원가입</a>
-        <!-- 로그인 상태라면 -->
-        <!-- <a href="/mypage" class="link">마이페이지</a>
-       <button class="btn btn-primary">로그아웃</button> -->
+          class="w-6 h-6"
+        />
+        <span class="font-semibold">FindMate</span>
+      </a>
+      <nav class="nav-right flex items-center gap-3">
+        {% if current_user %}
+        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        {% else %}
+        <a href="{{ url_for('login_page') }}" class="link">로그인</a>
+        <a href="{{ url_for('sign_page') }}" class="btn btn-primary"
+          >회원가입</a
+        >
+        {% endif %}
       </nav>
     </div>
-    <div class="element">
+
+    <!-- Content -->
+    <div class="element max-w-xl mx-auto px-4 py-10">
       <div class="frame-wrapper">
         <div class="frame">
           <div class="div">
-            <div class="group-wrapper">
-              <div class="group"></div>
-            </div>
+            <div class="group-wrapper"><div class="group"></div></div>
+
             <div class="frame-3">
               <div class="frame-4">
-                <div class="text-wrapper-5">
+                <div class="text-wrapper-5 text-2xl font-semibold mb-6">
                   아이디와 비밀번호를<br />입력해주세요
                 </div>
-                <form id="registrationForm">
-                  <div class="frame-5">
+
+                <form
+                  id="registrationForm"
+                  data-join-url="{{ url_for('api_join') }}"
+                  data-email-check-url-template="{{ url_for('api_email_check', email='__EMAIL__') }}"
+                  data-login-url="{{ url_for('login_page') }}"
+                >
+                  <div class="frame-5 space-y-5">
+                    <!-- 이름 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6">이름</div>
+                      <div class="text-wrapper-6 mb-2">이름</div>
                       <div class="frame-7">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="text"
                               id="nickname"
-                              class="input-field"
+                              class="input-field border w-full p-2 rounded"
                               placeholder=""
                             />
                           </div>
                         </div>
-                        <div id="nicknameError" class="error"></div>
+                        <div
+                          id="nicknameError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
                       </div>
                     </div>
+
+                    <!-- 아이디 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6">아이디</div>
+                      <div class="text-wrapper-6 mb-2">아이디</div>
                       <div class="frame-7">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="text"
                               id="username"
-                              class="input-field"
+                              class="input-field border w-full p-2 rounded"
                               placeholder="ID 입력"
                             />
                           </div>
                         </div>
-                        <div id="usernameError" class="error"></div>
+                        <div
+                          id="usernameError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
                       </div>
                     </div>
+
+                    <!-- 비밀번호 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6">비밀번호</div>
+                      <div class="text-wrapper-6 mb-2">비밀번호</div>
                       <div class="frame-9">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="password"
                               id="password"
-                              class="input-field"
+                              class="input-field border w-full p-2 rounded"
                               placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
                             />
                           </div>
                         </div>
-                        <div id="passwordError" class="error"></div>
+                        <div
+                          id="passwordError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></div>
                       </div>
                     </div>
+
+                    <!-- 비밀번호 확인 -->
                     <div class="frame-6">
-                      <div class="text-wrapper-6">비밀번호 확인</div>
+                      <div class="text-wrapper-6 mb-2">비밀번호 확인</div>
                       <div class="frame-9">
                         <div class="group-2">
                           <div class="overlap-group-2">
                             <input
                               type="password"
                               id="confirmPassword"
-                              class="input-field"
+                              class="input-field border w-full p-2 rounded"
                               placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
                             />
                           </div>
                         </div>
-                        <p id="confirmPasswordError" class="error"></p>
+                        <p
+                          id="confirmPasswordError"
+                          class="error text-red-500 text-sm mt-1"
+                        ></p>
                       </div>
                     </div>
                   </div>
-                  <div class="group-3">
-                    <button type="submit" class="overlap-3" id="nextButton">
+
+                  <div class="group-3 mt-6">
+                    <button
+                      type="submit"
+                      class="overlap-3 w-full py-3 rounded bg-blue-600 text-white"
+                      id="nextButton"
+                    >
                       <div class="text-wrapper-9">회원가입</div>
                     </button>
                   </div>
@@ -124,10 +177,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+    <script
+      src="https://kit.fontawesome.com/72f07bc14e.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
-  <script src="/FindMate/static/js/signup.js"></script>
-  <script
-    src="https://kit.fontawesome.com/72f07bc14e.js"
-    crossorigin="anonymous"
-  ></script>
 </html>
