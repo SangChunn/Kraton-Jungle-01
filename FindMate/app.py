@@ -64,7 +64,7 @@ def mypage():
     uid = (session["user"]["userId"] or "").lower()
 
     db = get_db()
-    profile = db["users"].find_one({"userId": uid}, {"_id": 0, "userId": 1, "name": 1})
+    profile = db["users"].find_one({"userId": uid}, {"_id": 0, "userId": 1, "name": 1, "password_hash": 1})
 
     # 주최
     hosted_raw = list(db["studies"].find({"hostId": uid}).sort("created_at", DESCENDING))
