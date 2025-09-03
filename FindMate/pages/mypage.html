@@ -37,17 +37,19 @@
     <div id="navbar">
       <a class="logo" href="/"
         ><img
-          src="/FindMate/views/book-open-svgrepo-com.png"
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
           alt="icon"
           id="bookIcon"
-        />FindMate</a
-      >
+          class="w-6 h-6"
+        />
       <nav class="nav-right">
-        <a href="/FindMate/pages/login.html" class="link">로그인</a>
-        <a href="/FindMate/pages/sign.html" class="btn btn-primary">회원가입</a>
-        <!-- 로그인 상태라면 -->
-        <!-- <a href="/mypage" class="link">마이페이지</a>
-       <button class="btn btn-primary">로그아웃</button> -->
+        {% if user %}
+          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="link">로그인</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        {% endif %}
       </nav>
     </div>
     <div class="flex flex-col bg-gray-50 min-h-[calc(100vh-64px)]">
