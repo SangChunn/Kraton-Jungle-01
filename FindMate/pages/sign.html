@@ -1,96 +1,133 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>회원가입</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/FindMate/static/css/signup.css" />
+    <link rel="stylesheet" href="/FindMate/static/css/style.css" />
+    <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
+    <title>sign</title>
   </head>
-  <body class="bg-gray-50">
-    <!-- 네비게이션 -->
-    <div class="p-4 bg-white shadow flex justify-between">
-      <a href="{{ url_for('home') }}" class="font-bold">FindMate</a>
-      <nav>
-        {% if session.user %}
-        <span class="mr-4">안녕하세요, {{ session.user.name }}님</span>
-        <a href="{{ url_for('logout') }}" class="text-blue-500">로그아웃</a>
-        {% else %}
-        <a href="{{ url_for('login') }}" class="mr-4 text-blue-500">로그인</a>
-        <a href="{{ url_for('signup') }}" class="text-blue-500">회원가입</a>
-        {% endif %}
+  <body>
+    <div id="navbar">
+      <a class="logo" href="/"
+        ><img
+          src="/FindMate/views/book-open-svgrepo-com.png"
+          alt="icon"
+          id="bookIcon"
+        />FindMate</a
+      >
+      <nav class="nav-right">
+        <a href="/FindMate/pages/login.html" class="link">로그인</a>
+        <a href="/FindMate/pages/sign.html" class="btn btn-primary">회원가입</a>
+        <!-- 로그인 상태라면 -->
+        <!-- <a href="/mypage" class="link">마이페이지</a>
+       <button class="btn btn-primary">로그아웃</button> -->
       </nav>
     </div>
-
-    <!-- 회원가입 폼 -->
-    <div class="max-w-md mx-auto mt-20 bg-white p-8 rounded-lg shadow">
-      <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
-
-      <!-- 플래시 메시지 출력 -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %}
-      <div class="mb-4">
-        {% for category, message in messages %}
-        <p
-          class="{% if category == 'error' %}text-red-500{% else %}text-green-600{% endif %}"
-        >
-          {{ message }}
-        </p>
-        {% endfor %}
+    <div class="element">
+      <div class="frame-wrapper">
+        <div class="frame">
+          <div class="div">
+            <div class="group-wrapper">
+              <div class="group"></div>
+            </div>
+            <div class="frame-3">
+              <div class="frame-4">
+                <div class="text-wrapper-5">
+                  아이디와 비밀번호를<br />입력해주세요
+                </div>
+                <form id="registrationForm">
+                  <div class="frame-5">
+                    <div class="frame-6">
+                      <div class="text-wrapper-6">이름</div>
+                      <div class="frame-7">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="text"
+                              id="nickname"
+                              class="input-field"
+                              placeholder=""
+                            />
+                          </div>
+                        </div>
+                        <div id="nicknameError" class="error"></div>
+                      </div>
+                    </div>
+                    <div class="frame-6">
+                      <div class="text-wrapper-6">아이디</div>
+                      <div class="frame-7">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="text"
+                              id="username"
+                              class="input-field"
+                              placeholder="ID 입력"
+                            />
+                          </div>
+                        </div>
+                        <div id="usernameError" class="error"></div>
+                      </div>
+                    </div>
+                    <div class="frame-6">
+                      <div class="text-wrapper-6">비밀번호</div>
+                      <div class="frame-9">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="password"
+                              id="password"
+                              class="input-field"
+                              placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
+                            />
+                          </div>
+                        </div>
+                        <div id="passwordError" class="error"></div>
+                      </div>
+                    </div>
+                    <div class="frame-6">
+                      <div class="text-wrapper-6">비밀번호 확인</div>
+                      <div class="frame-9">
+                        <div class="group-2">
+                          <div class="overlap-group-2">
+                            <input
+                              type="password"
+                              id="confirmPassword"
+                              class="input-field"
+                              placeholder="8~24자 이내, 영문 대소문자, 숫자, 특수기호로 조합"
+                            />
+                          </div>
+                        </div>
+                        <p id="confirmPasswordError" class="error"></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="group-3">
+                    <button type="submit" class="overlap-3" id="nextButton">
+                      <div class="text-wrapper-9">회원가입</div>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      {% endif %} {% endwith %}
-
-      <form method="POST" action="{{ url_for('signup') }}">
-        <div class="mb-4">
-          <label class="block text-sm font-medium">이름</label>
-          <input
-            type="text"
-            name="name"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">아이디</label>
-          <input
-            type="text"
-            name="userId"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">비밀번호</label>
-          <input
-            type="password"
-            name="password"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-sm font-medium">비밀번호 확인</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            class="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-500 text-white py-2 rounded"
-        >
-          회원가입
-        </button>
-      </form>
-
-      <p class="mt-4 text-center">
-        이미 계정이 있으신가요?
-        <a href="{{ url_for('login') }}" class="text-blue-500">로그인</a>
-      </p>
     </div>
   </body>
+  <script src="/FindMate/static/js/signup.js"></script>
+  <script
+    src="https://kit.fontawesome.com/72f07bc14e.js"
+    crossorigin="anonymous"
+  ></script>
 </html>
