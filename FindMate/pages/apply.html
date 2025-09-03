@@ -1,3 +1,15 @@
+<!--
+{string} recruit - 모집 여부
+{string} category - 카테고리 
+{number} current - 현재 인원
+{number} capacity - 최대 인원
+{string} title - 스터디 제목
+{string} username - 주최자 이름
+{date} date - 스터디 날짜와 시작 시간 (YYYY-MM-DDTHH:mm 형식)
+{number} duration - 소요 시간 (분 단위)
+{string} description - 스터디 설명
+-->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,9 +21,134 @@
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/FindMate/static/css/navbar.css" />
     <link rel="stylesheet" href="/FindMate/static/css/style.css" />
     <title>Document</title>
   </head>
-  <body></body>
+  <body>
+    <div id="navbar">
+      <a class="logo" href="/"
+        ><img
+          src="/FindMate/views/book-open-svgrepo-com.png"
+          alt="icon"
+          id="bookIcon"
+        />FindMate</a
+      >
+      <nav class="nav-right">
+        <a href="{{ url_for('login') }}" class="link">로그인</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+        <!-- 로그인 상태라면 -->
+        <!-- <a href="/mypage" class="link">마이페이지</a>
+       <button class="btn btn-primary">로그아웃</button> -->
+      </nav>
+    </div>
+    <div class="flex items-center justify-center bg-gray-50 min-h-[calc(100vh-64px)] py-6 px-10">
+      <!-- 카드 -->
+      <main class="max-w-4xl mx-auto pt-10 pb-20 w-full">
+        <article
+          class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10 flex flex-col"
+        >
+          <form 
+            id="form-container" 
+            class="space-y-6" 
+            onsubmit="return submitApplication(event)"  
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"> {{ recruit }} </span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200"> {{ category }} </span>
+              </div>
+              <span class="text-sm text-gray-500">👥 {{ current }} / {{ capacity }}</span>
+            </div>
+            <div>
+              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                스터디 제목
+              </h3>
+              <input
+                id="study-title"
+                type="text"
+                value="{{ title }}"
+                class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                readonly
+              />
+            </div>
+            
+            <div>
+              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                주최자
+              </h3>
+              <input
+                id="study-host"
+                type="text"
+                value="{{ username }}"
+                class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                readonly
+              />
+            </div>
+
+            <div class="flex gap-6">
+              <div class="w-1/2">
+                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                  스터디 시간
+                </h3>
+                <input
+                  id="study-date"
+                  type="datetime-local"
+                  value="{{ date }}"
+                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
+                  readonly
+                />
+              </div>
+              <div class="w-1/2">
+                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                  소요 시간
+                </h3>
+                <input
+                  id="study-duration"
+                  type="text"
+                  value="{{ duration }} 분" 
+                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
+                  readonly
+                /> 
+              </div>
+            </div>
+
+            <div>
+              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                내용
+              </h3>
+              <textarea
+                id="study-description"
+                class="mt-4 p-3 border border-gray-300 rounded-lg w-full h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                placeholder="스터디 설명이 존재하지 않습니다."
+                readonly
+              > {{ description }}
+              </textarea>
+            </div>
+
+            <div class="mt-auto flex justify-end gap-4">
+              <button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                type="submit"
+              > 
+                신청
+              </button>
+              <!-- <button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-red-600 hover:bg-gray-200"
+                type="button"
+              >
+                취소
+              </button> -->
+              <!-- 나중에 백엔드랑 연동할 때 추가 -->
+            </div>
+          </form>
+        </article>
+      </main>
+    </div>
+    <script
+      type="text/javascript"
+      src="/FindMate/static/js/create.js"
+    ></script>
+  </body>
 </html>
