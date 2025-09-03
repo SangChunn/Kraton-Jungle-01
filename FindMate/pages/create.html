@@ -81,12 +81,9 @@
               <label class="block text-sm font-medium text-gray-700"
                 >카테고리</label
               >
-              <select
-                name="category"
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+              <select name="category" class="border p-2 w-full">
                 {% for c in categories %}
-                <option value="{{ c }}">{{ c }}</option>
+                  <option value="{{ c.key }}">{{ c.name }}</option>
                 {% endfor %}
               </select>
             </div>
