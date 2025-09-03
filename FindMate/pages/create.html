@@ -4,20 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link
-      rel="stylesheet"
-      as="style"
-      crossorigin
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/navbar.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
+    <link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <title>스터디 등록</title>
   </head>
   <body class="bg-gray-50">
@@ -25,19 +15,18 @@
     <div id="navbar">
       <a class="logo" href="{{ url_for('home') }}">
         <img
-          src="{{ url_for('static', filename='views/book-open-svgrepo-com.png') }}"
-          alt="icon"
-          id="bookIcon"
+          src="{{ url_for('static', filename='images/book-open-svgrepo-com.png') }}"
+          alt="icon" id="bookIcon"
         />
         FindMate
       </a>
       <nav class="nav-right">
         {% if user %}
-        <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
-        <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
+          <a href="{{ url_for('mypage') }}" class="link">마이페이지</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-primary">로그아웃</a>
         {% else %}
-        <a href="{{ url_for('login') }}" class="link">로그인</a>
-        <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
+          <a href="{{ url_for('login') }}" class="link">로그인</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-primary">회원가입</a>
         {% endif %}
       </nav>
     </div>
@@ -47,81 +36,51 @@
       <article class="bg-white rounded-2xl shadow-lg border p-10">
         <h1 class="text-2xl font-bold mb-6">스터디 등록</h1>
 
-        <form
-          method="POST"
-          action="{{ url_for('create') }}"
-          onsubmit="return prepareSubmit()"
-        >
+        <form method="POST" action="{{ url_for('create') }}" onsubmit="return prepareSubmit()">
           <div class="space-y-4">
+            <!-- 제목 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >제목</label
-              >
-              <input
-                type="text"
-                name="title"
-                required
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <label class="block text-sm font-medium text-gray-700">제목 *</label>
+              <input type="text" name="title" required
+                class="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
+            <!-- 주최자: 표시만(서버에서 세션으로 저장) -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >주최자</label
-              >
-              <input
-                type="text"
-                name="host"
-                required
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <label class="block text-sm font-medium text-gray-700">주최자</label>
+              <input type="text" value="{{ user.name }}" readonly
+                class="mt-1 w-full rounded-lg border border-gray-300 p-3 bg-gray-50" />
             </div>
 
+            <!-- 카테고리 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >카테고리</label
-              >
-              <select name="category" class="border p-2 w-full">
+              <label class="block text-sm font-medium text-gray-700">카테고리 *</label>
+              <select name="category" class="border p-2 w-full" required>
                 {% for c in categories %}
                   <option value="{{ c.key }}">{{ c.name }}</option>
                 {% endfor %}
               </select>
             </div>
 
+            <!-- 날짜/시간 (hidden: dateISO) -->
             <div class="flex gap-6">
               <div class="w-1/2">
-                <label class="block text-sm font-medium text-gray-700"
-                  >날짜</label
-                >
-                <input
-                  type="date"
-                  id="dateInput"
-                  required
-                  class="mt-1 w-full rounded-lg border border-gray-300 p-3"
-                />
+                <label class="block text-sm font-medium text-gray-700">날짜 *</label>
+                <input type="date" id="dateInput" required
+                  class="mt-1 w-full rounded-lg border border-gray-300 p-3" />
               </div>
               <div class="w-1/2">
-                <label class="block text-sm font-medium text-gray-700"
-                  >시간</label
-                >
-                <input
-                  type="time"
-                  id="timeInput"
-                  required
-                  class="mt-1 w-full rounded-lg border border-gray-300 p-3"
-                />
+                <label class="block text-sm font-medium text-gray-700">시간 *</label>
+                <input type="time" id="timeInput" required
+                  class="mt-1 w-full rounded-lg border border-gray-300 p-3" />
               </div>
             </div>
             <input type="hidden" name="dateISO" id="dateISO" />
 
+            <!-- 소요 시간 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >소요 시간(분)</label
-              >
-              <select
-                name="durationMin"
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3"
-              >
+              <label class="block text-sm font-medium text-gray-700">소요 시간(분) *</label>
+              <select name="durationMin" class="mt-1 w-full rounded-lg border border-gray-300 p-3" required>
                 <option value="30">30</option>
                 <option value="60">60</option>
                 <option value="90">90</option>
@@ -129,42 +88,28 @@
               </select>
             </div>
 
+            <!-- 모집 인원 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >모집 인원</label
-              >
-              <input
-                type="number"
-                id="capacityMax"
-                placeholder="최대 인원 수"
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3"
-              />
-              <input type="hidden" name="capacity" id="capacityHidden" />
+              <label class="block text-sm font-medium text-gray-700">모집 인원 *</label>
+              <input type="number" name="capacity" min="1" required placeholder="최대 인원 수"
+                class="mt-1 w-full rounded-lg border border-gray-300 p-3" />
             </div>
 
+            <!-- 내용 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >내용</label
-              >
-              <textarea
-                name="desc"
-                rows="5"
-                class="mt-1 w-full rounded-lg border border-gray-300 p-3"
-              ></textarea>
+              <label class="block text-sm font-medium text-gray-700">내용</label>
+              <textarea name="content" rows="5"
+                class="mt-1 w-full rounded-lg border border-gray-300 p-3"></textarea>
             </div>
           </div>
 
           <div class="mt-8 flex justify-end gap-4">
-            <a
-              href="{{ url_for('home') }}"
-              class="h-12 px-6 rounded-lg text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 flex items-center"
-            >
+            <a href="{{ url_for('home') }}"
+              class="h-12 px-6 rounded-lg text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 flex items-center">
               취소
             </a>
-            <button
-              type="submit"
-              class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-            >
+            <button type="submit"
+              class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700">
               생성
             </button>
           </div>
@@ -178,9 +123,10 @@
         const t = document.getElementById("timeInput").value;
         if (d && t) {
           document.getElementById("dateISO").value = `${d}T${t}`;
+        } else {
+          alert("날짜와 시간을 모두 입력해주세요.");
+          return false;
         }
-        const max = document.getElementById("capacityMax").value || "1";
-        document.getElementById("capacityHidden").value = `0/${max}`;
         return true;
       }
     </script>

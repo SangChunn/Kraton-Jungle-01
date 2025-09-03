@@ -27,3 +27,9 @@ def ensure_category_indexes():
     db = get_db()
     db["categories"].create_index([("key", ASCENDING)], unique=True)
     db["categories"].create_index([("active", ASCENDING), ("order", ASCENDING)])
+    
+def ensure_study_indexes():
+    db = get_db()
+    db["studies"].create_index([("active", ASCENDING), ("created_at", ASCENDING)])
+    db["studies"].create_index([("category", ASCENDING), ("start_at", ASCENDING)])
+    db["studies"].create_index([("hostId", ASCENDING)])
