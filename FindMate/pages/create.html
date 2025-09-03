@@ -45,101 +45,116 @@
         <article
           class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10 flex flex-col"
         >
-        <div id="form-container" class="space-y-6" >
-          <div>
-            <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-              스터디 제목
-            </h3>
-            <input
-              id="study-title"
-              type="text"
-              placeholder="스터디 제목을 입력하세요"
-              class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div>
-            <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-              주최자
-            </h3>
-            <input
-              id="study-host"
-              type="text"
-              value="{{ username }}"
-              class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div class="flex gap-6">
-            <div class="w-1/2">
+          <form id="form-container" class="space-y-6" >
+            <div>
               <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                스터디 시간
+                스터디 제목
               </h3>
               <input
-                id="study-date"
-                type="date"
+                id="study-title"
+                type="text"
+                placeholder="스터디 제목을 입력하세요"
                 class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div class="w-1/2">
+            
+            <div>
               <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-                소요 시간
+                주최자
               </h3>
-              <select
-                id="study-duration"
-                name="duration"
+              <input
+                id="study-host"
+                type="text"
+                value="{{ username }}"
                 class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="30">30분</option>
-                <option value="60">1시간</option>
-                <option value="90">1시간 30분</option>
-                <option value="120" selected>2시간</option> <!-- 'selected'는 기본 선택값 -->
-                <option value="150">2시간 30분</option>
-                <option value="180">3시간</option>
-                <option value="150">3시간 30분</option>
-                <option value="180">4시간</option>
-              </select>
+              />
             </div>
-          </div>
 
-          <div>
-            <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-              모집 인원
-            </h3>
-            <input
-              id="study-capacity"
-              type="number"
-              placeholder="모집 인원 수를 입력하세요"
-              class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+            <div class="flex gap-6">
+              <div class="w-1/2">
+                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                  스터디 시간
+                </h3>
+                <input
+                  id="study-date"
+                  type="date"
+                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div class="w-1/2">
+                <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                  소요 시간
+                </h3>
+                <select
+                  id="study-duration"
+                  name="duration"
+                  class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="30">30분</option>
+                  <option value="60">1시간</option>
+                  <option value="90">1시간 30분</option>
+                  <option value="120" selected>2시간</option> <!-- 'selected'는 기본 선택값 -->
+                  <option value="150">2시간 30분</option>
+                  <option value="180">3시간</option>
+                  <option value="150">3시간 30분</option>
+                  <option value="180">4시간</option>
+                </select>
+              </div>
+            </div>
 
-          <div>
-            <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
-              내용
-            </h3>
-            <textarea
-              id="study-description"
-              class="mt-4 p-3 border border-gray-300 rounded-lg w-full h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="스터디에 대한 설명을 입력하세요. React, 알고리즘, 디자인 등 어떤 주제든 좋습니다."
-            ></textarea>
-          </div>
+            <div>
+              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                모집 인원
+              </h3>
+              <input
+                id="study-capacity"
+                type="number"
+                placeholder="모집 인원 수를 입력하세요"
+                class="mt-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-          <div class="mt-auto flex justify-end gap-4">
-            <button 
-              class="h-12 px-6 rounded-lg text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
-              onclick="{{ url_for('home') }}"
-            >
-              취소
-            </button>
-            <button 
-              class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
-              onclick= clickCreateBtn()
-            > 
-              생성
-            </button>
-          </div>
-        </div>
+            <div>
+              <h3 class="mt-4 text-lg font-extrabold text-gray-800 clamp-2 wrap-anywhere">
+                내용
+              </h3>
+              <textarea
+                id="study-description"
+                class="mt-4 p-3 border border-gray-300 rounded-lg w-full h-40 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                placeholder="스터디에 대한 설명을 입력하세요. React, 알고리즘, 디자인 등 어떤 주제든 좋습니다."
+              ></textarea>
+            </div>
+
+            <div class="mt-auto flex justify-end gap-4">
+              <button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200"
+                onclick="{{ url_for('home') }}"
+              >
+                취소
+              </button>
+
+              <button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                type="submit"
+              > 
+                생성
+              </button>
+
+              <!--<button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                type="submit"
+              > 
+                모집 완료
+              </button>
+
+              <button 
+                class="h-12 px-6 rounded-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                type="submit"
+              > 
+                스터디 종료
+              </button>-->   <!-- 나중에 백엔드랑 연동할 때 추가 -->
+            </div>
+          </form>
         </article>
       </main>
     </div>
@@ -149,4 +164,3 @@
     ></script>
   </body>
 </html>
-
