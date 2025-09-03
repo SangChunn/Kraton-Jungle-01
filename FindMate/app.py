@@ -16,32 +16,71 @@ def home():
     return render_template("index.html", user=user)
 
 # 로그인 페이지
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        user_id = request.form.get("userId", "").strip()
-        password = request.form.get("password", "")
+@app.route("/login", methods=["GET"], endpoint="login")
+def login_page():
+    return render_template("login.html", user=session.get("user"))
 
-        db = get_db()
-        user = db["users"].find_one({"userId": user_id})
+# API: 로그인 
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
 
-        if not user or not check_password_hash(user.get("password_hash", ""), password):
-            flash("아이디 또는 비밀번호가 올바르지 않습니다.", "error")
-            return redirect(url_for("login"))
+    app.logger.info(f"[LOGIN] email(normalized)={email}") ## check
 
-        # 로그인 성공 → 세션 저장
-        session["user"] = {"userId": user["userId"], "name": user.get("name", "")}
-        flash("로그인 성공!", "success")
-        return redirect(url_for("home"))
+    if not email or not password:
+        return jsonify({
+            "isSuccess": False,
+            "code": "VALIDATION_ERROR",
+            "message": "아이디/비밀번호를 입력해주세요."
+        }), 400
 
-    return render_template("login.html")
+    db = get_db()
+    db["users"].update_one(
+    {"userId": "test"},  # 소문자 기준
+    {"$set": {"password_hash": generate_password_hash("Test1234!")}}
+)
+    user = db["users"].find_one({"userId": email})
+    app.logger.info(f"[LOGIN] user_found={bool(user)}") # check
+
+
+#check
+    ok = check_password_hash(user.get("password_hash", ""), password)
+    app.logger.info(f"[LOGIN] password_ok={ok}")
+
+    if not user or not check_password_hash(user.get("password_hash", ""), password):
+        print(email)
+        return jsonify({
+            "isSuccess": False,
+            "code": "AUTH401",
+            "message": "아이디 또는 비밀번호가 올바르지 않습니다."
+        }), 401
+###check 
+
+
+    # 로그인 성공 -> 세션에 저장(쿠키는 Flask가 설정)
+    session["user"] = {"userId": user["userId"], "name": user.get("name", "")}
+
+    return jsonify({
+        "isSuccess": True,
+        "code": "COMMON200",
+        "message": "로그인 성공"
+    }), 200
+
+@app.route("/api/refresh-token", methods=["POST"])
+def api_refresh_token():
+    if "user" in session:
+        return jsonify({"isSuccess": True, "code": "COMMON200", "message": "세션 유효"}), 200
+    return jsonify({"isSuccess": False, "code": "AUTH401", "message": "로그인이 필요합니다."}), 401
+
 
 # 회원가입 페이지
 @app.route("/sign", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        user_id = request.form.get("userId", "").strip()
+        user_id = request.form.get("userId", "").strip().lower()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirmPassword", "")
 
@@ -129,3 +168,10 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+@app.route("/mypage")
+def mypage():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    return render_template("mypage.html", user=session.get("user"))

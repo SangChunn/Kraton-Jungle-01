@@ -27,7 +27,6 @@ async function validateForm(event) {
       },
       body: JSON.stringify({ email: id, password }),
     });
-
     let data = {};
     try {
       data = await res.json();
