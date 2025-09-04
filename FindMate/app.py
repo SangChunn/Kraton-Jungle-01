@@ -463,7 +463,7 @@ def api_join():
         "result": False
     }), 200
     
-@app.route("/api/email-check/<email>")
+@app.route("/api/email-check/<path:email>")
 def api_email_check(email):
     db = get_db()
     
