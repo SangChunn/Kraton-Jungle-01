@@ -21,12 +21,6 @@ app.config.update(
     SESSION_COOKIE_SECURE=True,  
 )
 
-@app.before_first_request
-def bootstrap():
-    ensure_user_indexes()
-    ensure_category_indexes()   
-    ensure_study_indexes()   
-
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html"), 404
